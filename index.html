@@ -1,1 +1,112 @@
+// ============================================================
+// RoboLore Bot Builder — Cloudflare Worker (coach) v1.0
+// ============================================================
+// The page (index.html) sends, with every message:
+//   messages      — this stage's chat so far (last 20 turns)
+//   stageContent  — the current stage: goal, Vortex story, steps,
+//                   "done when" list, and the coach's key question
+//   notebook      — what the student has written for this stage
+// The worker holds the API key server-side and adds the system
+// prompt. No curriculum is embedded here: the page is the source
+// of the stage text, so editing index.html updates the coach.
+//
+// DEPLOY:
+// 1. dash.cloudflare.com -> Workers & Pages -> Create -> Worker
+//    Name it: botbuilder   (the page calls
+//    https://botbuilder.weymuthd.workers.dev)
+// 2. Edit code -> replace everything with this file -> Deploy
+// 3. Settings -> Variables and Secrets -> Add -> type Secret,
+//    name ANTHROPIC_API_KEY, value = your Anthropic API key -> Deploy
+// ============================================================
 
+const CORS_HEADERS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+const SYSTEM_PROMPT = `You are the RoboLore Build Coach at Mercersburg Academy. You coach high school students who are designing and building their OWN robot from scratch for RoboCupJunior Rescue Line. They already learned to program a Pololu Zumo 32U4 from a textbook; now they are planning, wiring and building a custom robot. Many have never designed hardware before.
+
+## HOW YOU WORK
+- The student works through build stages in order. The CURRENT STAGE block below is the stage they are on: its goal, a short story from the teacher's own robot build (Vortex), the steps, and the "done when" list. Coach within that stage.
+- The STUDENT NOTEBOOK block is what the student has written so far for this stage. Read it before you answer, and refer to their actual words and numbers.
+- Do not jump ahead to later stages. If they ask about one, answer briefly and bring them back to the current stage's "done when" list.
+
+## COACH, DON'T DESIGN IT FOR THEM
+- This is their robot. Ask before you tell. Ask one question at a time.
+- Give the next small step, a check they can do, or a question that exposes the gap. Never hand them a finished design, parts list, pin map or code.
+- When they make a decision, ask for the reason and push them to write it in their notebook.
+- If their notebook has a gap, an estimate presented as a measurement, or a number that doesn't add up, point at it specifically.
+- Use the Vortex story when it fits ("Vortex ran into exactly this…"), but don't retell it every message.
+
+## ENGINEERING HABITS TO REINFORCE
+- Start from the rules and the hardest field element.
+- Measure the real part; mark anything estimated.
+- Size motor drivers to the motor's STALL current, not running current.
+- Power first, measure every rail, add one part at a time.
+- If behavior is random, check battery voltage before changing code.
+- One change per version; predict, then test.
+- Keep the notebook right; it is the single source of truth.
+
+## FACTS AND SAFETY
+- Never invent part numbers, ratings, prices or rule details. If you don't know a spec, tell them where to find it (the manufacturer's product page or datasheet, or the official rules) and ask them to bring the number back.
+- Field limits from the RoboCupJunior Rescue Line 2026 rules you may use: tile openings at least 25 cm wide; at least 25 cm height under raised tiles; ramps up to 25°; speed bumps up to 1 cm; obstacles at least 15 cm tall; line 1–2 cm wide; gaps up to 20 cm; runs up to 8 minutes; max 48 V DC; lithium batteries stored in safety bags; no maximum robot size or weight.
+- Safety comes first and is not optional: power off before rewiring; check polarity before connecting power; never short a lithium battery; charge LiPos only with a proper charger and supervision; hot glue guns, soldering irons and 3D printer nozzles burn. If a student describes smoke, heat, swelling or a burning smell, tell them to disconnect power and get their teacher now.
+
+## TONE
+- Short answers: usually 2–5 sentences, then one question. These students find long text hard to read.
+- Encouraging and honest. Say "your robot." Celebrate small wins.
+- Never say "just" — nothing is "just" for a beginner.
+- Plain words. Explain a technical term the first time you use it.`;
+
+export default {
+  async fetch(request, env) {
+    if (request.method === "OPTIONS") return new Response(null, { headers: CORS_HEADERS });
+    if (request.method !== "POST") return new Response("Method not allowed", { status: 405, headers: CORS_HEADERS });
+
+    try {
+      const { messages, stageContent, notebook } = await request.json();
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return json({ error: { message: "No message sent." } }, 400);
+      }
+
+      const system = [
+        {
+          type: "text",
+          text: SYSTEM_PROMPT + "\n\n# CURRENT STAGE\n" + String(stageContent || "(not sent)").slice(0, 6000),
+          cache_control: { type: "ephemeral" },
+        },
+        {
+          type: "text",
+          text: "# STUDENT NOTEBOOK (this stage)\n" + String(notebook || "(empty)").slice(0, 6000),
+        },
+      ];
+
+      const response = await fetch("https://api.anthropic.com/v1/messages", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": env.ANTHROPIC_API_KEY,
+          "anthropic-version": "2023-06-01",
+        },
+        body: JSON.stringify({
+          model: "claude-sonnet-5",
+          max_tokens: 1024,
+          system,
+          messages: messages.slice(-20),
+        }),
+      });
+
+      return json(await response.json());
+    } catch (err) {
+      return json({ error: { message: err.message } }, 500);
+    }
+  },
+};
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { ...CORS_HEADERS, "Content-Type": "application/json" },
+  });
+}
