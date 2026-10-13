@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<!-- RoboLore Bot Builder v1.0 -->
+<!-- RoboLore Bot Builder v1.1 — coach runs on the zumosupport server -->
 <title>RoboLore Bot Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -141,7 +141,7 @@ textarea{width:100%;min-height:84px;resize:vertical;font:15px/1.5 var(--sans);pa
 </aside>
 
 <script>
-const COACH_URL = "https://botbuilder.weymuthd.workers.dev";
+const COACH_URL = "https://zumosupport.weymuthd.workers.dev";
 const KEY = "robolore-botbuilder-v1";
 
 const STAGES = [
@@ -320,7 +320,7 @@ $("compose").addEventListener("submit",async e=>{
   busy=true; $("sendBtn").disabled=true; $("sendBtn").textContent="…";
   try{
     const res=await fetch(COACH_URL,{method:"POST",headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({messages:S.chats[i].slice(-20),stageContent:stageContext(i),notebook:notebookFor(i)})});
+      body:JSON.stringify({mode:"builder",messages:S.chats[i].slice(-20),stageContent:stageContext(i),notebook:notebookFor(i)})});
     const data=await res.json();
     if(data.error) throw new Error(data.error.message||"error");
     const reply=(data.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("\n").trim()||"(No answer. Try asking another way.)";
