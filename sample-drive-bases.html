@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.4</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.4.1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -84,7 +84,7 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.4</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.4.1</div>
   <h1>Sample drive bases</h1>
   <p>Step 1: lay out the robot from above. Step 2: set casters, deck, and motor mount from the side. Step 3a: add the front sensors. Every view is drawn to scale with Pololu 25D gearmotors.</p>
 </header>
@@ -147,9 +147,9 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 <section id="step3" hidden>
 <div class="summary" id="summary3"></div>
 <div class="controls">
-  <div class="sub">1 · Line sensor · QTR-MD-08A</div>
+  <div class="sub">1 · Line sensor · QTRX-MD-08A</div>
   <div class="row"><span class="l">Behind front edge</span><input type="range" id="qs" min="-25" max="100" step="1" oninput="s3('qs',+this.value)" aria-label="QTR center distance behind the front edge in millimetres"><span class="val" id="qsv"></span><span class="hint">negative = sticks out ahead</span></div>
-  <div class="row"><span class="l">Height off floor</span><input type="range" id="qh" min="2" max="45" step="0.5" oninput="s3('qh',+this.value)" aria-label="QTR sensor face height above the floor in millimetres"><span class="val" id="qhv"></span><span class="hint">Pololu: 5 mm best, 40 mm max</span></div>
+  <div class="row"><span class="l">Height off floor</span><input type="range" id="qh" min="2" max="45" step="0.5" oninput="s3('qh',+this.value)" aria-label="QTR sensor face height above the floor in millimetres"><span class="val" id="qhv"></span><span class="hint">Pololu: 10 mm best, 40 mm max</span></div>
   <div class="sub">2 · Camera · OpenMV RT1062</div>
   <div class="row"><span class="l">Behind front edge</span><input type="range" id="cs" min="-20" max="100" step="1" oninput="s3('cs',+this.value)" aria-label="Camera lens distance behind the front edge in millimetres"><span class="val" id="csv"></span><span class="hint">lens face</span></div>
   <div class="row"><span class="l">Lens height</span><input type="range" id="ch" min="30" max="200" step="1" oninput="s3('ch',+this.value)" aria-label="Camera lens height above the floor in millimetres"><span class="val" id="chv"></span></div>
@@ -181,7 +181,7 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
     <li>3D-printed cradle: ≈3 mm wall is a placeholder; students design their own. It can sit on top, underneath, or through a slot in the deck at any depth.</li>
     <li>Level (2WD): the deck underside has to sit at caster height at the casters and at the drive axle. The page compares the two and shows the gap.</li>
     <li>Ramp angles are geometry estimates from the drawing, measured from the wheel and caster contact points to the deck edge or the lowest part of the belly (conservative). Ramps can be up to 25° (rule 3.7). Approach is the front, departure is the rear, and break-over is the belly between contact points.</li>
-    <li>QTR-MD-08A, Pololu #4248: 61.0 × 20.0 × 2.5 mm, 8 sensors at 8 mm pitch; best sensing distance 5 mm, maximum recommended 40 mm (Pololu product page). At 5 mm the board sits below the 10 mm speed-bump height, so students must choose a height and a way past bumps.</li>
+    <li>QTRX-MD-08A, Pololu #4448: 61.0 × 20.0 × 3.0 mm, 8 sensors at 8 mm pitch; best sensing distance 10 mm, high-reflectance objects detectable to about 40 mm (Pololu product page). The black line is 1 to 2 cm wide (rule 3.3.1). Below 10 mm the board sits under the speed-bump height, so students must choose a height and a way past bumps.</li>
     <li>OpenMV Cam RT1062: 45 × 36 × 29 mm, 20 g; with its OV5640 sensor the field of view is 65.9° horizontal and 51.8° vertical (OpenMV product page). The drawing assumes the 45 mm side stands upright and the 29 mm side is the lens depth. Floor view is a pinhole-camera estimate.</li>
     <li>VL53L8CX carrier, Pololu #3419: 13 × 23 × 3 mm, 45° horizontal and vertical field of view, 20 mm to 4 m (Pololu product page). Drawn centered on the front edge, facing forward, 23 mm side across.</li>
     <li>VL53L4CD: 18° field of view (ST). The board is not chosen yet; it is drawn at the size of Pololu carrier #3692 (12.7 × 17.8 × 2.2 mm) as an example. Side spots are drawn 30 mm behind the front edge.</li>
@@ -409,8 +409,8 @@ Object.assign(G,{bad:null,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,
 draw3();
 }
 /* ---------- step 3a: front sensors ---------- */
-const st3={qs:15,qh:5,cs:20,ch:120,ct:35,lh:40,l4h:30,l4f:true,l4l:false,l4r:false};
-const QTR={w:61,d:20,t:2.5},CAM={h:45,w:36,d:29,hv:25.9,hh:32.95},L8={w:23,h:13,t:3,hf:22.5},L4={w:12.7,h:17.8,t:2.2,hf:9};
+const st3={qs:15,qh:10,cs:20,ch:120,ct:35,lh:40,l4h:30,l4f:true,l4l:false,l4r:false};
+const QTR={w:61,d:20,t:3},CAM={h:45,w:36,d:29,hv:25.9,hh:32.95},L8={w:23,h:13,t:3,hf:22.5},L4={w:12.7,h:17.8,t:2.2,hf:9};
 const rad=a=>a*Math.PI/180;
 function s3(k,v){st3[k]=v;draw3()}
 function draw3(){
@@ -487,7 +487,7 @@ if(st3.l4l)tb+=R(-xe-L4.t,yS-L4.w/2,-xe,yS+L4.w/2);
 if(st3.l4r)tb+=R(xe,yS-L4.w/2,xe+L4.t,yS+L4.w/2);
 h+=`<g fill="var(--tof)" stroke="var(--tof-line)" stroke-width="0.8">${tb}</g>`;
 let lyy=-250;const lx=500;
-[['var(--sensor)','var(--sensor-line)','QTR-MD-08A, 61 × 20 mm'],['var(--sensor)','var(--sensor-line)','OpenMV RT1062 footprint'],['var(--tof)','var(--tof-line)','VL53L8CX / VL53L4CD']].forEach(([f,s,tx])=>{h+=`<rect x="${lx}" y="${lyy-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">${tx}</text>`;lyy+=26});
+[['var(--sensor)','var(--sensor-line)','QTRX-MD-08A, 61 × 20 mm'],['var(--sensor)','var(--sensor-line)','OpenMV RT1062 footprint'],['var(--tof)','var(--tof-line)','VL53L8CX / VL53L4CD']].forEach(([f,s,tx])=>{h+=`<rect x="${lx}" y="${lyy-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">${tx}</text>`;lyy+=26});
 h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Camera floor view</text>`;lyy+=26;
 h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--tof-line)" stroke-width="1" stroke-dasharray="2 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Distance sensor view</text>`;lyy+=26;
 h+=`<text x="${lx}" y="${lyy+10}">Front is up. To scale;</text><text x="${lx}" y="${lyy+26}">views approximate.</text>`;
