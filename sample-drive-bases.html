@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.2</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.3</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one column workbench — controls on top, scale drawing, readouts, notes */
+/* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
 :root{
   --bg:#f5f6f4; --panel:#ffffff; --fg:#1c2321; --muted:#5b6662; --line:#d6dbd8;
   --accent:#1f6f8b; --accent-bg:#e2f0f5;
@@ -38,21 +38,26 @@
   --belt:#ef9f27; --limit:#f08070; --spin:#6cc0dc;
   --ok:#7cc47f; --bad:#f08070; --warn-bg:#3a1c19; color-scheme:dark}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--sans)}
-[hidden]{display:none!important}
 .wrap{max-width:900px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
+section{display:flex;flex-direction:column;gap:20px}
+[hidden]{display:none!important}
 header .code{font:500 12px var(--mono);letter-spacing:.06em;color:var(--muted)}
 h1{font-size:1.6rem;font-weight:600;margin:4px 0 6px;text-wrap:balance}
 header p{margin:0;color:var(--muted);max-width:65ch}
+.steps{display:flex;gap:8px;flex-wrap:wrap}
 .controls{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
 .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .row .l{font-size:13px;color:var(--muted);min-width:130px;font-weight:500}
 .row .hint{font-size:12px;color:var(--muted)}
 .row.dim .l,.row.dim button,.row.dim input{opacity:.45}
+.sub{font-size:12px;color:var(--muted);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-top:4px}
 button{font:inherit;font-size:13px;padding:5px 11px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
 button:hover{border-color:var(--muted)}
 button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 button.on{border-color:var(--accent);background:var(--accent-bg);color:var(--accent);font-weight:500}
+button.go{border-color:var(--accent);color:var(--accent);font-weight:500;padding:7px 16px}
 input[type=range]{width:180px;accent-color:var(--accent)}
+input[type=number]{width:70px;font:inherit;font-size:13px;padding:4px 6px;border:1px solid var(--line);border-radius:6px;background:transparent;color:var(--fg)}
 .val{font:500 13px var(--mono);font-variant-numeric:tabular-nums;min-width:54px}
 .stage{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto}
 svg{display:block;width:100%;height:auto;min-width:340px}
@@ -63,6 +68,10 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 .tile .v{font:500 22px var(--mono);font-variant-numeric:tabular-nums}
 .warn{background:var(--warn-bg);border:1px solid var(--bad);border-radius:8px;padding:12px 14px;color:var(--fg)}
 .warn strong{color:var(--bad)}
+.status{border-radius:8px;padding:12px 14px;border:1px solid var(--line);background:var(--panel)}
+.status strong.ok{color:var(--ok)} .status strong.bad{color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.summary{font-size:13px;color:var(--muted)}
 .notes{font-size:14px;color:var(--muted)}
 .notes h2{font-size:15px;color:var(--fg);font-weight:600;margin:0 0 6px}
 .notes ul{margin:0;padding-left:18px;max-width:72ch}
@@ -72,11 +81,17 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.2</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.3</div>
   <h1>Sample drive bases</h1>
-  <p>Pick a drive layout, body shape, wheels, motor arrangement, and motor mount. The top view and side view are drawn to scale with Pololu 25D gearmotors and checked against the class 225 mm width limit and a 1 cm speed bump.</p>
+  <p>Step 1: lay out the robot from above. Step 2: set casters, deck, and motor mount from the side. Both views are drawn to scale with Pololu 25D gearmotors.</p>
 </header>
 
+<div class="steps">
+  <button id="tab1" class="on" onclick="go(1)">Step 1 · Top view</button>
+  <button id="tab2" onclick="go(2)">Step 2 · Side view</button>
+</div>
+
+<section id="step1">
 <div class="controls">
   <div class="row"><span class="l">Samples</span>
     <button onclick="preset({drive:'2wd',shape:'square',place:'outside',wheel:'thin',axle:'center',arr:'b2b',dia:70})">Classic square</button>
@@ -92,38 +107,54 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
   <div class="row" id="g-wheel"><span class="l">Wheel width</span></div>
   <div class="row" id="g-dia"><span class="l">Wheel diameter</span></div>
   <div class="row" id="g-arr"><span class="l">Motor arrangement</span></div>
-  <div class="row" id="g-axle"><span class="l">Axle position</span><span class="hint" id="axle-hint"></span></div>
+  <div class="row" id="g-axle"><span class="l">Axle position</span></div>
   <div class="row" id="g-wb"><span class="l">4WD wheelbase</span><input type="range" id="wb" min="80" max="160" step="5" value="100" oninput="st.wb=+this.value;draw()" aria-label="4WD wheelbase in millimetres"><span class="val" id="wbv">100 mm</span><span class="hint" id="wb-hint"></span></div>
-  <div class="row" id="g-mount"><span class="l">Motor mount</span></div>
-  <div class="row" id="g-pos"><span class="l">Mount position</span><span class="hint" id="pos-hint"></span></div>
-  <div class="row" id="g-depth"><span class="l">Deck depth</span><input type="range" id="depth" min="-9" max="9" step="1" value="0" oninput="st.depth=+this.value;draw()" aria-label="Deck height relative to motor shaft in millimetres"><span class="val" id="depthv">0 mm</span><span class="hint" id="depth-hint"></span></div>
   <div class="row"><span class="l">Overlay</span><button id="spinbtn" onclick="st.spin=!st.spin;draw()">Spin circle + 30 cm tile</button></div>
 </div>
 
 <div class="warn" id="roundwarn" hidden><strong>Round does not work with 4WD.</strong> A round body has to enclose all four wheels and the motors at both corners, so it ends up wider than the 225 mm limit. Use a square, rectangle, or U-shape for 4WD.</div>
 
 <div class="stage"><svg id="v" viewBox="0 0 680 490" role="img" aria-label="Top view of the selected drive base, front at top"></svg></div>
+<div class="read" id="out1"></div>
+<div class="nav"><span></span><button class="go" onclick="go(2)">Next: side view →</button></div>
+</section>
 
+<section id="step2" hidden>
+<div class="summary" id="summary"></div>
+<div class="controls">
+  <div class="sub">1 · Casters</div>
+  <div class="row" id="g-caster"><span class="l">Ball caster</span></div>
+  <div class="row" id="g-spacer"><span class="l">¾″ spacers</span></div>
+  <div class="row" id="nocaster" hidden><span class="hint">No casters on this layout. The wheels set the deck height.</span></div>
+  <div class="sub">2 · Deck</div>
+  <div class="row" id="g-deck"><span class="l">Deck thickness</span></div>
+  <div class="sub">3 · Motor mount</div>
+  <div class="row" id="g-mount"><span class="l">Motor mount</span></div>
+  <div class="row" id="g-pos"><span class="l">Mount position</span></div>
+  <div class="row" id="g-adj"><span class="l" id="adj-l">Shim under bracket</span><input type="range" id="adj" min="0" max="20" step="1" value="0" oninput="st.adj=+this.value;draw()" aria-label="Mount adjustment in millimetres"><span class="val" id="adjv">0 mm</span></div>
+</div>
+
+<div class="status" id="status"></div>
 <div class="stage"><svg id="side" viewBox="0 0 680 300" role="img" aria-label="Side view of the selected drive base, front at left"></svg></div>
-
-<div class="read" id="out"></div>
+<div class="read" id="out2"></div>
+<div class="nav"><button class="go" onclick="go(1)">← Back: top view</button><span></span></div>
+</section>
 
 <div class="notes">
-  <h2>What the drawing is based on</h2>
+  <h2>What the drawings are based on</h2>
   <ul>
     <li>Motor: Pololu #4805, 47:1 25D×67L mm HP 6V with 48 CPR encoder; 12.5 mm output shaft (Pololu product page).</li>
-    <li>Wheel diameters 60, 70, 80, and 90 mm are the Pololu wheel sizes that fit the 4 mm hub (Pololu). 70 mm is the Components reference pick; the others change speed and ground clearance, so rerun the Drive Chain Calculator.</li>
-    <li>Wheel and track widths (≈8, 15, 25, 20 mm) are example sizes, not chosen parts. Ball caster 19 mm (#955).</li>
-    <li>Back to back: both motors on one centerline. Staggered: one motor shifted forward, one back, so they overlap side to side and the body can be narrower. The two wheels then sit out of line with each other: about 27 mm with the Pololu bracket, about 33 mm with a printed cradle.</li>
+    <li>Wheel diameters 60, 70, 80, and 90 mm are the Pololu wheel sizes that fit the 4 mm hub. 70 mm is the Components reference pick; the others change speed and ground clearance, so rerun the Drive Chain Calculator.</li>
+    <li>Wheel and track widths (≈8, 15, 25, 20 mm) are example sizes, not chosen parts.</li>
+    <li>Back to back: both motors on one centerline. Staggered: one motor shifted forward, one back, so the body can be narrower. The two wheels then sit out of line: about 27 mm with the Pololu bracket, about 33 mm with a printed cradle.</li>
     <li>Axle position applies to 2WD with wheels. The Session 02 ramp test slipped with front drive because weight shifted off the drive wheels.</li>
-    <li>4WD wheelbase is the distance between front and rear axles. Shorter turns more easily; longer is steadier on ramps.</li>
-    <li>Spin circle: the area the robot sweeps turning in place, compared to one 30 × 30 cm tile (rule 3.1.2). The center is midway between the drive wheels for 2WD and the middle of the wheelbase for 4WD and tracks.</li>
-    <li>The 3 mm motor-to-wheel gap and other clearances are placeholders; real values depend on hubs and brackets.</li>
-    <li>Pololu bracket #2676 (Pololu dimension diagram): 2 mm aluminum L-bracket, foot 52 × 21.7 mm, upright 27 mm, shaft center 14.5 mm from the mounting face. It bolts to the top or the bottom of the deck only.</li>
-    <li>3D-printed cradle: wall thickness ≈3 mm is a placeholder; students design their own. It can sit on top, underneath, or through a slot in the deck at any depth.</li>
-    <li>Deck thickness in the side view is a 3 mm placeholder. Speed bumps are up to 1 cm high (rule 3.5.1); the lowest-point check compares against that.</li>
-    <li>Ball casters must reach the floor from the deck; changing the mount changes the deck height, so casters may need spacers.</li>
-    <li>The 225 mm limit is the class size target (25 cm tunnel minus 10%). Length has no limit.</li>
+    <li>Spin circle: the area swept turning in place, compared to one 30 × 30 cm tile (rule 3.1.2).</li>
+    <li>Ball casters (Pololu dimension drawings): ⅜″ #950/951 is 10.1 mm tall, ½″ #952/953 is 13.5 mm, ¾″ metal #955 is 20.9 mm, measured from the mounting face to the bottom of the ball. The ¾″ comes with 1/16″ and 1/8″ spacers, giving about 22.5, 24.1, or 25.7 mm. The smaller casters also ship with spacers, but Pololu does not list their sizes, so they are not offered here.</li>
+    <li>Pololu bracket #2676 (Pololu dimension diagram): 2 mm aluminum, foot 52 × 21.7 mm, upright 27 mm, shaft center 14.5 mm from the mounting face. It bolts to the top or bottom of the deck only. A shim under the foot moves the motor away from the deck.</li>
+    <li>3D-printed cradle: ≈3 mm wall is a placeholder; students design their own. It can sit on top, underneath, or through a slot in the deck at any depth.</li>
+    <li>Level (2WD): the deck underside has to sit at caster height at the casters and at the drive axle. The page compares the two and shows the gap.</li>
+    <li>Ramp angles are geometry estimates from the drawing, measured from the wheel and caster contact points to the deck edge or the lowest part of the belly (conservative). Ramps can be up to 25° (rule 3.7). Approach is the front, departure is the rear, and break-over is the belly between contact points.</li>
+    <li>Speed bumps are up to 1 cm high (rule 3.5.1). The 225 mm limit is the class size target (25 cm tunnel minus 10%). Length has no limit.</li>
   </ul>
 </div>
 </div>
@@ -131,6 +162,8 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 <script>
 const S=1.35,CX=240,CY=245;
 const X=m=>CX+m*S,Y=m=>CY+m*S;
+const CASTERS={c38:{n:'⅜″',h:10.1,d:12.1,f:19.1,b:9.525},c12:{n:'½″',h:13.5,d:15.2,f:20.3,b:12.7},c34:{n:'¾″',h:20.9,d:22.9,f:22.9,b:19.05}};
+const SPACER={none:0,s16:1.5875,s8:3.175,both:4.7625};
 const opts={drive:[['2wd','2WD + casters'],['4wd4','4WD, 4 motors'],['4wd2','4WD, 2 motors + belts']],
 shape:[['square','Square'],['rect','Rectangle'],['round','Round'],['u','U-shaped']],
 place:[['inside','Inside body'],['outside','Outside'],['wells','Wheel wells']],
@@ -138,41 +171,80 @@ wheel:[['thin','Thin ≈8 mm'],['medium','Medium ≈15 mm'],['wide','Wide ≈25 
 dia:[[60,'60 mm'],[70,'70 mm'],[80,'80 mm'],[90,'90 mm']],
 arr:[['b2b','Back to back'],['stag','Staggered']],
 axle:[['front','Front'],['center','Center'],['rear','Rear']],
+caster:[['c38','⅜″ · 10.1 mm'],['c12','½″ · 13.5 mm'],['c34','¾″ · 20.9 mm']],
+spacer:[['none','None'],['s16','1/16″'],['s8','1/8″'],['both','Both']],
+deck:[[3,'3 mm'],[4.5,'4.5 mm'],[6,'6 mm']],
 mount:[['pololu','Pololu bracket #2676'],['print','3D-printed cradle']],
 pos:[['above','Above deck'],['below','Below deck'],['between','In between']]};
-const st={drive:'2wd',shape:'square',place:'outside',wheel:'thin',dia:70,arr:'b2b',axle:'center',wb:100,spin:false,mount:'pololu',pos:'above',depth:0};
+const st={drive:'2wd',shape:'square',place:'outside',wheel:'thin',dia:70,arr:'b2b',axle:'center',wb:100,spin:false,
+caster:'c34',spacer:'none',deck:3,mount:'pololu',pos:'above',adj:0};
 const WW={thin:8,medium:15,wide:25,track:20};
-for(const k in opts){const g=document.getElementById('g-'+k);opts[k].forEach(([v,t])=>{const b=document.createElement('button');b.textContent=t;b.dataset.k=k;b.dataset.v=String(v);b.onclick=()=>{st[k]=v;draw()};g.appendChild(b)})}
-document.querySelectorAll('.row .hint').forEach(h=>h.parentNode.appendChild(h));
+for(const k in opts){const g=document.getElementById('g-'+k);opts[k].forEach(([v,t])=>{const b=document.createElement('button');b.textContent=t;b.dataset.k=k;b.dataset.v=String(v);
+ b.onclick=()=>{st[k]=v;if(k==='deck')document.getElementById('deckc').value=v;if(k==='pos'||k==='mount')st.adj=0;draw()};g.appendChild(b)})}
+const addHint=(row,id)=>{const s=document.createElement('span');s.className='hint';s.id=id;document.getElementById(row).appendChild(s)};
+addHint('g-axle','axle-hint');addHint('g-spacer','spacer-hint');addHint('g-pos','pos-hint');
+document.getElementById('g-deck').insertAdjacentHTML('beforeend','<label class="hint" for="deckc">Custom</label><input type="number" id="deckc" min="1" max="12" step="0.5" value="3"><span class="hint">mm</span>');
+document.getElementById('deckc').addEventListener('input',e=>{const v=parseFloat(e.target.value);if(v>=1&&v<=12){st.deck=v;draw()}});
+document.getElementById('g-adj').insertAdjacentHTML('beforeend','<button id="levelbtn">Make level</button>');
+document.getElementById('levelbtn').addEventListener('click',makeLevel);
+document.getElementById('g-wb').appendChild(document.getElementById('wb-hint'));
 function preset(p){Object.assign(st,p);document.getElementById('wb').value=st.wb;draw()}
+function go(n){document.getElementById('step1').hidden=n!==1;document.getElementById('step2').hidden=n!==2;
+ document.getElementById('tab1').classList.toggle('on',n===1);document.getElementById('tab2').classList.toggle('on',n===2);draw();window.scrollTo(0,0)}
 function R(x1,y1,x2,y2,a){return `<rect x="${X(Math.min(x1,x2))}" y="${Y(Math.min(y1,y2))}" width="${Math.abs(x2-x1)*S}" height="${Math.abs(y2-y1)*S}" ${a||''}/>`}
 const tile=(k,v,c)=>`<div class="tile"><div class="k">${k}</div><div class="v"${c?` style="color:${c}"`:''}>${v}</div></div>`;
-function draw(){
+const r1=x=>Math.round(x*10)/10;
+let G={};
+const base=()=>st.mount==='print'?15.5:14.5;
+function mountOffset(){const T=st.deck,a=st.adj;
+ if(st.pos==='above')return T+base()+a;
+ if(st.pos==='below')return -base()-a;
+ return T/2-a}
+function adjForOffset(o){const T=st.deck;
+ if(st.pos==='above')return o-T-base();
+ if(st.pos==='below')return -base()-o;
+ return T/2-o}
+function makeLevel(){if(!G.hasCaster)return;const el=document.getElementById('adj');const v=Math.round(adjForOffset(G.hR-G.Hc));
+ if(v>=+el.min&&v<=+el.max){st.adj=v;draw()}else draw('No setting in range makes this level.')}
+function draw(msg){
 document.querySelectorAll('button[data-k]').forEach(b=>b.classList.toggle('on',String(st[b.dataset.k])===b.dataset.v));
 document.getElementById('spinbtn').classList.toggle('on',st.spin);
 document.getElementById('wbv').textContent=st.wb+' mm';
 const trk=st.wheel==='track',w=WW[st.wheel];
 const drv=trk?'trk':st.drive,four=drv==='4wd4'||drv==='4wd2';
 const p3=st.mount==='print';
-if(!p3&&st.pos==='between')st.pos='above';
+if(!p3&&st.pos==='between'){st.pos='above';st.adj=0}
 document.querySelectorAll('button[data-k=pos]').forEach(b=>{if(b.dataset.v==='between'){b.classList.toggle('on',st.pos==='between');b.style.opacity=p3?'':'0.45'}});
 document.getElementById('pos-hint').textContent=p3?'':'In between: 3D-printed cradle only';
-document.getElementById('g-depth').classList.toggle('dim',st.pos!=='between');
-document.getElementById('depth-hint').textContent=st.pos==='between'?'+ raises the deck':'In between only';
-document.getElementById('depthv').textContent=(st.depth>0?'+':'')+st.depth+' mm';
-const D=trk?null:st.dia,hR=trk?0:D/2,stag=st.arr==='stag',OF=p3?16.5:13.5;
+const adjEl=document.getElementById('adj');
+if(st.pos==='between'){adjEl.min=-9;adjEl.max=9;document.getElementById('adj-l').textContent='Deck depth'}
+else{adjEl.min=0;adjEl.max=20;document.getElementById('adj-l').textContent=p3?(st.pos==='above'?'Extra cradle lift':'Extra cradle drop'):'Shim under bracket'}
+st.adj=Math.max(+adjEl.min,Math.min(+adjEl.max,st.adj));adjEl.value=st.adj;
+document.getElementById('adjv').textContent=(st.pos==='between'&&st.adj>0?'+':'')+st.adj+' mm';
 document.getElementById('g-axle').classList.toggle('dim',drv!=='2wd');
 document.getElementById('axle-hint').textContent=drv==='2wd'?'':'2WD with wheels only';
 document.getElementById('g-wb').classList.toggle('dim',!four);
 document.getElementById('wb-hint').textContent=four?'':'4WD only';
 document.getElementById('g-dia').classList.toggle('dim',trk);
-const svg=document.getElementById('v'),out=document.getElementById('out'),warn=document.getElementById('roundwarn');
+const D=trk?null:st.dia,hR=trk?0:D/2,stag=st.arr==='stag',OF=p3?16.5:13.5;
+const svg=document.getElementById('v'),out=document.getElementById('out1'),warn=document.getElementById('roundwarn');
+const sv=document.getElementById('side'),out2=document.getElementById('out2'),stat=document.getElementById('status');
+const hasCaster=drv==='2wd';
+document.getElementById('g-caster').hidden=!hasCaster;
+document.getElementById('g-spacer').hidden=!hasCaster;
+document.getElementById('nocaster').hidden=hasCaster;
+document.getElementById('g-spacer').classList.toggle('dim',st.caster!=='c34');
+document.getElementById('spacer-hint').textContent=st.caster==='c34'?'':'¾″ caster only';
+const cs=CASTERS[st.caster],Hc=cs.h+(st.caster==='c34'?SPACER[st.spacer]:0);
+document.getElementById('levelbtn').hidden=!hasCaster;
+const lab=(k)=>opts[k].find(o=>String(o[0])===String(st[k]))[1];
+document.getElementById('summary').textContent='From step 1: '+[lab('drive'),lab('shape'),trk?'tracks':st.dia+' mm wheels',lab('place').toLowerCase(),stag?'staggered motors':'back-to-back motors'].join(' · ');
 if(st.shape==='round'&&four){
-  warn.hidden=false;
-  svg.innerHTML=`<text x="340" y="235" text-anchor="middle" style="font-size:15px;fill:var(--bad)">Round + 4WD: not a workable layout</text><text x="340" y="260" text-anchor="middle">Choose a different shape or 2WD.</text>`;
-  out.innerHTML=tile('Overall width','over 225 mm','var(--bad)')+tile('Width limit','225 mm');
-  document.getElementById('side').innerHTML='';
-  return}
+ warn.hidden=false;
+ svg.innerHTML=`<text x="340" y="235" text-anchor="middle" style="font-size:15px;fill:var(--bad)">Round + 4WD: not a workable layout</text><text x="340" y="260" text-anchor="middle">Choose a different shape or 2WD.</text>`;
+ out.innerHTML=tile('Overall width','over 225 mm','var(--bad)')+tile('Width limit','225 mm');
+ sv.innerHTML=`<text x="340" y="150" text-anchor="middle">Fix the top view first: round does not work with 4WD.</text>`;out2.innerHTML='';stat.innerHTML='';
+ return}
 warn.hidden=true;
 const wf=(stag?40:68)+(p3&&!stag?3:0),wi=wf+(p3?4:3),wo=wi+w;
 let hw=st.place==='outside'?wf+(p3?3:0):st.place==='wells'?wo+3:wo+8;
@@ -198,13 +270,13 @@ let ymin=Math.min(...motors.map(m=>m.y-12.5),...wheels.map(q=>q.y0));
 let body,nw=0;
 if(st.shape==='round')body=`<circle cx="${X(0)}" cy="${Y(0)}" r="${hw*S}"/>`;
 else if(st.shape==='u'){nw=0.22*2*hw;const d=Math.max(12,Math.min(0.3*L,ymin+L/2-10)),t=-L/2;
-body=`<path d="M${X(-hw)} ${Y(t)} H${X(-nw)} V${Y(t+d)} H${X(nw)} V${Y(t)} H${X(hw)} V${Y(L/2)} H${X(-hw)} Z"/>`}
+ body=`<path d="M${X(-hw)} ${Y(t)} H${X(-nw)} V${Y(t+d)} H${X(nw)} V${Y(t)} H${X(hw)} V${Y(L/2)} H${X(-hw)} Z"/>`}
 else body=`<rect x="${X(-hw)}" y="${Y(-L/2)}" width="${2*hw*S}" height="${L*S}" rx="8"/>`;
 const cx2=st.place==='wells'?hw+6:wo+3;
 let cuts='';if(st.place!=='outside')wheels.forEach(q=>cuts+=R(q.s*(wi-3),q.y0-4,q.s*cx2,q.y1+4));
 let h=`<defs><mask id="mk"><rect x="0" y="0" width="680" height="490" fill="#fff"/><g fill="#000">${cuts}</g></mask><clipPath id="cp">${body}</clipPath></defs>`;
 let cy=0;
-if(drv==='2wd'){const dw=wheels;cy=dw.reduce((s,q)=>s+q.yc,0)/dw.length}
+if(drv==='2wd')cy=wheels.reduce((s,q)=>s+q.yc,0)/wheels.length;
 if(st.spin)h+=R(-150,cy-150,150,cy+150,'fill="none" stroke="var(--line)" stroke-width="1.5"')+`<text x="${X(-146)}" y="${Y(cy-150)+14}">30 cm tile</text>`;
 [-112.5,112.5].forEach(x=>h+=`<line x1="${X(x)}" y1="12" x2="${X(x)}" y2="478" stroke="var(--limit)" stroke-width="1" stroke-dasharray="6 4"/>`);
 h+=`<g fill="var(--body)" stroke="var(--body-line)" stroke-width="1" mask="url(#mk)">${body}</g>`;
@@ -220,12 +292,11 @@ let wh='';wheels.forEach(q=>wh+=R(q.s*wi,q.y0,q.s*wo,q.y1,`rx="${trk?8:3}"`));
 h+=`<g fill="var(--wheel)" stroke="var(--wheel-line)" stroke-width="0.8">${wh}</g>`;
 if(trk){let tl='';[1,-1].forEach(s=>{for(let y=-62;y<66;y+=10)tl+=`<line x1="${X(s*wi)}" y1="${Y(y)}" x2="${X(s*wo)}" y2="${Y(y)}"/>`});h+=`<g stroke="var(--wheel-line)" stroke-width="0.6" opacity="0.6">${tl}</g>`}
 if(drv==='4wd2'){let bl='';[1,-1].forEach(s=>{const ys=wheels.filter(q=>q.s===s).map(q=>q.yc);bl+=R(s*(wi+1),Math.min(...ys)-6,s*(wo-1),Math.max(...ys)+6,'rx="4"')});h+=`<g fill="none" stroke="var(--belt)" stroke-width="2" stroke-dasharray="5 3">${bl}</g>`}
-let casterYs=[];
-if(drv==='2wd'){const e=L/2-18,am=st.shape==='u'?(nw+hw)/2:0;let cs=[];
+let casters=[];
+if(hasCaster){const e=L/2-cs.f/2-6,am=st.shape==='u'?(nw+hw)/2:0;
  const front=st.shape==='u'?[[am,-e],[-am,-e]]:[[0,-e]],rear=[[0,e]];
- if(st.axle==='center')cs=front.concat(rear);else if(st.axle==='front')cs=rear;else cs=front;
- casterYs=[...new Set(cs.map(c=>c[1]))];
- h+=`<g fill="var(--caster)" stroke="var(--caster-line)" stroke-width="0.6">${cs.map(([a,b])=>`<circle cx="${X(a)}" cy="${Y(b)}" r="${9.5*S}"/>`).join('')}</g>`}
+ if(st.axle==='center')casters=front.concat(rear);else if(st.axle==='front')casters=rear;else casters=front;
+ h+=`<g fill="var(--caster)" stroke="var(--caster-line)" stroke-width="0.6">${casters.map(([a,b])=>`<circle cx="${X(a)}" cy="${Y(b)}" r="${cs.d/2*S}"/>`).join('')}</g>`}
 let SR=0;
 if(st.shape==='round')SR=hw+Math.abs(cy);else SR=Math.hypot(hw,L/2+Math.abs(cy));
 wheels.forEach(q=>SR=Math.max(SR,Math.hypot(wo,Math.max(Math.abs(q.y0-cy),Math.abs(q.y1-cy)))));
@@ -233,7 +304,7 @@ motors.forEach(({y})=>SR=Math.max(SR,Math.hypot(wf+12.5,Math.abs(y-cy)+12.5)));
 if(st.spin)h+=`<circle cx="${X(0)}" cy="${Y(cy)}" r="${SR*S}" fill="none" stroke="var(--spin)" stroke-width="1.5" stroke-dasharray="3 4"/><circle cx="${X(0)}" cy="${Y(cy)}" r="3" fill="var(--spin)"/>`;
 const lx=500;
 const lg=[['var(--motor)','var(--motor-line)','25D motor, 25 × 67 mm'],['var(--wheel)','var(--wheel-line)',trk?'Track':`Wheel, ${D} mm dia.`],['var(--body)','var(--body-line)','Body / chassis']];
-if(drv==='2wd')lg.push(['var(--caster)','var(--caster-line)','Ball caster, 19 mm']);
+if(hasCaster)lg.push(['var(--caster)','var(--caster-line)',`Ball caster, ${cs.n}`]);
 let ly=40;lg.forEach(([f,s,t])=>{h+=`<rect x="${lx}" y="${ly-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${ly}" dominant-baseline="central">${t}</text>`;ly+=26});
 const line=(c,dash,t,wid)=>{h+=`<line x1="${lx}" y1="${ly}" x2="${lx+16}" y2="${ly}" stroke="${c}" stroke-width="${wid}" stroke-dasharray="${dash}"/><text x="${lx+24}" y="${ly}" dominant-baseline="central">${t}</text>`;ly+=26};
 line('var(--body-line)','3 2',p3?'Printed cradle':'Bracket #2676',1);
@@ -244,14 +315,28 @@ const mc=drv==='4wd4'?4:2;
 h+=`<text x="${lx}" y="${ly+16}">Front is up. Motors: ${mc}.</text><text x="${lx}" y="${ly+34}">To scale; clearances</text><text x="${lx}" y="${ly+50}">approximate.</text>`;
 svg.innerHTML=h;
 const W=Math.round(2*Math.max(hw,wo)),ok=W<=225,SD=Math.round(2*SR);
-let tiles=tile('Overall width ≈',W+' mm',ok?'var(--ok)':'var(--bad)')+tile('Body length ≈',Math.round(L)+' mm')+tile('Spin circle ≈',SD+' mm',SD<=300?'var(--ok)':'var(--bad)')+(stag&&!trk?tile('Wheel offset ≈',Math.round(2*OF)+' mm'):'');
-const sv=document.getElementById('side');
-if(trk){sv.innerHTML=`<text x="340" y="150" text-anchor="middle">Side view needs real track dimensions, so it is not drawn for tracks.</text>`;out.innerHTML=tiles;return}
-const T=3,cr=p3?15.5:12.5;let dTop,dBot,low;
-if(st.pos==='above'){dTop=hR-(p3?15.5:14.5);dBot=dTop-T;low=dBot}
-else if(st.pos==='below'){dBot=hR+(p3?15.5:14.5);dTop=dBot+T;low=hR-cr}
-else{const mid=hR+st.depth;dBot=mid-T/2;dTop=mid+T/2;low=Math.min(dBot,hR-15.5)}
-const stackTop=Math.max(D,dTop,hR+cr,st.pos==='above'&&!p3?dTop+27:0);
+out.innerHTML=tile('Overall width ≈',W+' mm',ok?'var(--ok)':'var(--bad)')+tile('Body length ≈',Math.round(L)+' mm')+tile('Spin circle ≈',SD+' mm',SD<=300?'var(--ok)':'var(--bad)')+(stag&&!trk?tile('Wheel offset ≈',Math.round(2*OF)+' mm'):'');
+G={hR,Hc,hasCaster};
+/* ---------- side view ---------- */
+if(trk){sv.innerHTML=`<text x="340" y="150" text-anchor="middle">Side view needs real track dimensions, so it is not drawn for tracks.</text>`;out2.innerHTML='';stat.innerHTML='';return}
+const T=st.deck,o=mountOffset();
+const dBot=hR-o,dTop=dBot+T;
+let mBot,mTop;
+if(p3){mBot=st.pos==='above'?dTop:hR-15.5;mTop=st.pos==='below'?dBot:hR+15.5}
+else if(st.pos==='above'){mBot=dTop;mTop=hR+12.5}
+else{mTop=dBot;mBot=hR-12.5}
+const low=Math.min(dBot,st.pos==='above'?Infinity:mBot);
+const stackTop=Math.max(D,dTop,mTop);
+const gap=hasCaster?dBot-Hc:0;
+const nearW=wheels.filter(q=>q.s===1),nearM=motors.filter(q=>q.s===1);
+const cys=hasCaster?[...new Set(casters.map(c=>c[1]))]:[];
+const contacts=wheels.map(q=>q.yc).concat(cys).sort((a,b)=>a-b);
+const uniq=contacts.filter((v,i,a)=>i===0||Math.abs(v-a[i-1])>0.5);
+const deg=x=>x*180/Math.PI;
+const ovF=uniq[0]+L/2,ovR=L/2-uniq[uniq.length-1];
+const appr=ovF<=0.5?90:deg(Math.atan2(Math.max(0.1,dBot),ovF));
+const dep=ovR<=0.5?90:deg(Math.atan2(Math.max(0.1,dBot),ovR));
+let brk=180;for(let i=0;i<uniq.length-1;i++){const l=uniq[i+1]-uniq[i];if(l<1)continue;brk=Math.min(brk,deg(2*Math.atan(2*Math.max(0.1,low)/l)))}
 const S2=2,X2=m=>340+m*S2,Z2=z=>262-z*S2;
 const RR=(x1,z1,x2,z2,a)=>`<rect x="${X2(Math.min(x1,x2))}" y="${Z2(Math.max(z1,z2))}" width="${Math.abs(x2-x1)*S2}" height="${Math.abs(z2-z1)*S2}" ${a||''}/>`;
 let g='';
@@ -259,21 +344,37 @@ g+=`<text x="20" y="20">Side view, right side. Front is left. Wheel drawn see-th
 g+=`<line x1="20" y1="${Z2(10)}" x2="660" y2="${Z2(10)}" stroke="var(--limit)" stroke-width="1" stroke-dasharray="4 3"/><text x="660" y="${Z2(10)-5}" text-anchor="end">10 mm speed bump</text>`;
 g+=`<line x1="20" y1="${Z2(0)}" x2="660" y2="${Z2(0)}" stroke="var(--fg)" stroke-width="1.2"/><text x="660" y="${Z2(0)+16}" text-anchor="end">Floor</text>`;
 g+=`<g fill="var(--body)" stroke="var(--body-line)" stroke-width="1">${RR(-L/2,dBot,L/2,dTop)}</g>`;
-const nm=motors.filter(q=>q.s===1),nwh=wheels.filter(q=>q.s===1);
 let mm='';
-nm.forEach(({y})=>{
- if(p3){const zb=st.pos==='above'?dTop:hR-15.5,zt=st.pos==='below'?dBot:hR+15.5;mm+=RR(y-15.5,zb,y+15.5,zt,'rx="3"')}
- else if(st.pos==='above'){mm+=RR(y-12.5,dTop,y+12.5,dTop+27,'rx="10"');mm+=RR(y-10.85,dTop,y+10.85,dTop+2)}
- else{mm+=RR(y-12.5,dBot-27,y+12.5,dBot,'rx="10"');mm+=RR(y-10.85,dBot-2,y+10.85,dBot)}});
+nearM.forEach(({y})=>{
+ if(p3)mm+=RR(y-15.5,mBot,y+15.5,mTop,'rx="3"');
+ else if(st.pos==='above'){const fb=dTop+st.adj;if(st.adj)mm+=RR(y-10.85,dTop,y+10.85,fb);mm+=RR(y-12.5,fb,y+12.5,fb+27,'rx="10"')}
+ else{const ft=dBot-st.adj;if(st.adj)mm+=RR(y-10.85,ft,y+10.85,dBot);mm+=RR(y-12.5,ft-27,y+12.5,ft,'rx="10"')}});
 g+=`<g fill="none" stroke="var(--body-line)" stroke-width="1" stroke-dasharray="3 2">${mm}</g>`;
-g+=`<g fill="var(--motor)" stroke="var(--motor-line)" stroke-width="0.8">${nm.map(({y})=>`<circle cx="${X2(y)}" cy="${Z2(hR)}" r="${12.5*S2}"/>`).join('')}</g>`;
-g+=`<g fill="var(--wheel)" fill-opacity="0.25" stroke="var(--wheel-line)" stroke-width="1.2">${nwh.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="${hR*S2}"/>`).join('')}</g>`;
-g+=`<g fill="var(--wheel-line)">${nwh.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="2.5"/>`).join('')}</g>`;
-if(drv==='2wd'&&casterYs.length){g+=`<g stroke="var(--caster-line)" stroke-width="1" fill="var(--caster)">${casterYs.map(y=>`<line x1="${X2(y)}" y1="${Z2(dBot)}" x2="${X2(y)}" y2="${Z2(19)}" stroke-dasharray="3 2"/><circle cx="${X2(y)}" cy="${Z2(9.5)}" r="${9.5*S2}"/>`).join('')}</g>`}
+g+=`<g fill="var(--motor)" stroke="var(--motor-line)" stroke-width="0.8">${nearM.map(({y})=>`<circle cx="${X2(y)}" cy="${Z2(hR)}" r="${12.5*S2}"/>`).join('')}</g>`;
+g+=`<g fill="var(--wheel)" fill-opacity="0.25" stroke="var(--wheel-line)" stroke-width="1.2">${nearW.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="${hR*S2}"/>`).join('')}</g>`;
+g+=`<g fill="var(--wheel-line)">${nearW.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="2.5"/>`).join('')}</g>`;
+if(hasCaster){let cg='';const sp=Hc-cs.h;
+ cys.forEach(y=>{const ballBot=dBot-Hc,ballC=ballBot+cs.b/2,hb=ballC+cs.b*0.2;
+  if(sp>0)cg+=RR(y-cs.d/2,dBot-sp,y+cs.d/2,dBot,'fill="none" stroke-dasharray="2 2"');
+  cg+=RR(y-cs.f/2,hb,y+cs.f/2,dBot-sp,'rx="2"');
+  cg+=`<circle cx="${X2(y)}" cy="${Z2(ballC)}" r="${cs.b/2*S2}"/>`});
+ g+=`<g fill="var(--caster)" stroke="var(--caster-line)" stroke-width="0.8">${cg}</g>`}
 sv.innerHTML=g;
-const lowR=Math.round(low*10)/10;
-tiles+=tile('Lowest point ≈',lowR+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck top ≈',Math.round(dTop)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm');
-out.innerHTML=tiles}
+let sHtml='';
+if(hasCaster){const need=adjForOffset(hR-Hc),ab=Math.abs(gap),lvl=ab<0.5;
+ if(lvl)sHtml=`<strong class="ok">Level.</strong> The deck underside at the drive axle (${r1(dBot)} mm) matches the caster height (${r1(Hc)} mm) within half a millimetre.`;
+ else if(gap>0)sHtml=`<strong class="bad">Not level: the casters hang ${r1(ab)} mm above the floor.</strong> The robot tips toward the casters. `;
+ else sHtml=`<strong class="bad">Not level: the casters reach ${r1(ab)} mm below the floor.</strong> The drive wheels lift off. `;
+ if(!lvl){const lo=+adjEl.min,hi=+adjEl.max;
+  if(need>=lo-0.5&&need<=hi+0.5)sHtml+=`Set ${document.getElementById('adj-l').textContent.toLowerCase()} to about ${r1(need)} mm, or press Make level.`;
+  else sHtml+=`This mount position can't reach it. Try ${gap>0?'a taller caster or more spacers, a smaller wheel, or another mount position':'a shorter caster, a bigger wheel, or another mount position'}.`}}
+else sHtml=`<strong class="ok">No casters.</strong> All wheels touch the floor, so the deck is level by design.`;
+if(msg)sHtml+=` <strong class="bad">${msg}</strong>`;
+stat.innerHTML=sHtml;
+const okA=a=>a>=25?'var(--ok)':'var(--bad)';
+out2.innerHTML=tile('Lowest point ≈',r1(low)+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck underside ≈',r1(dBot)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm')
+ +tile('Approach ≈',appr>=89?'no overhang':Math.round(appr)+'°',okA(appr))+tile('Departure ≈',dep>=89?'no overhang':Math.round(dep)+'°',okA(dep))+tile('Break-over ≈',brk>=179?'n/a':Math.round(brk)+'°',okA(brk));
+}
 draw();
 </script>
 </body>
