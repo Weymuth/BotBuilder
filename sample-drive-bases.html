@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.5.1</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.6</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -106,9 +106,9 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.5.1</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.6</div>
   <h1>Sample drive bases</h1>
-  <p>Work through the steps on the right; the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
+  <p>Work through the steps on the right. The page starts blank; each part appears in the drawing when you choose it, and the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
 </header>
 
 <div class="work">
@@ -126,14 +126,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <section id="step1">
 <div class="controls">
-  <div class="row"><span class="l">Samples</span>
-    <button onclick="preset({drive:'2wd',shape:'square',place:'outside',wheel:'thin',axle:'center',arr:'b2b',dia:70})">Classic square</button>
-    <button onclick="preset({drive:'2wd',shape:'u',place:'wells',wheel:'medium',axle:'center',arr:'b2b',dia:70})">XRP-style U</button>
-    <button onclick="preset({drive:'4wd4',shape:'rect',place:'inside',wheel:'medium',arr:'b2b',dia:70,wb:100})">4WD box</button>
-    <button onclick="preset({drive:'4wd2',shape:'rect',place:'outside',wheel:'wide',arr:'b2b',dia:70,wb:100})">4WD belts</button>
-    <button onclick="preset({drive:'2wd',shape:'rect',place:'outside',wheel:'track',arr:'b2b'})">Tank tracks</button>
-    <button onclick="preset({drive:'2wd',shape:'square',place:'inside',wheel:'wide',axle:'rear',arr:'stag',dia:80})">Narrow staggered</button>
-  </div>
+  <div class="row" id="g-samples"><span class="l">Samples</span></div>
   <div class="row" id="g-drive"><span class="l">Drive</span></div>
   <div class="row" id="g-shape"><span class="l">Shape</span></div>
   <div class="row" id="g-place"><span class="l">Wheel placement</span></div>
@@ -141,7 +134,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
   <div class="row" id="g-dia"><span class="l">Wheel diameter</span></div>
   <div class="row" id="g-arr"><span class="l">Motor arrangement</span></div>
   <div class="row" id="g-axle"><span class="l">Axle position</span></div>
-  <div class="row" id="g-wb"><span class="l">4WD wheelbase</span><input type="range" id="wb" min="80" max="160" step="5" value="100" oninput="st.wb=+this.value;draw()" aria-label="4WD wheelbase in millimetres"><span class="val" id="wbv">100 mm</span><span class="hint" id="wb-hint"></span></div>
+  <div class="row" id="g-wb"><span class="l">4WD wheelbase</span><input type="range" id="wb" min="80" max="160" step="5" value="100" oninput="st.wb=+this.value;rev.drive=true;draw()" aria-label="4WD wheelbase in millimetres"><span class="val" id="wbv">100 mm</span><span class="hint" id="wb-hint"></span></div>
   <div class="row"><span class="l">Overlay</span><button id="spinbtn" onclick="st.spin=!st.spin;draw()">Spin circle + 30 cm tile</button></div>
 </div>
 
@@ -164,7 +157,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
   <div class="sub">3 · Motor mount</div>
   <div class="row" id="g-mount"><span class="l">Motor mount</span></div>
   <div class="row" id="g-pos"><span class="l">Mount position</span></div>
-  <div class="row" id="g-adj"><span class="l" id="adj-l">Shim under bracket</span><input type="range" id="adj" min="0" max="20" step="1" value="0" oninput="st.adj=+this.value;draw()" aria-label="Mount adjustment in millimetres"><span class="val" id="adjv">0 mm</span></div>
+  <div class="row" id="g-adj"><span class="l" id="adj-l">Shim under bracket</span><input type="range" id="adj" min="0" max="20" step="1" value="0" oninput="st.adj=+this.value;rev.drive=true;draw()" aria-label="Mount adjustment in millimetres"><span class="val" id="adjv">0 mm</span></div>
 </div>
 
 <div class="status" id="status"></div>
@@ -254,16 +247,25 @@ pos:[['above','Above deck'],['below','Below deck'],['between','In between']]};
 const st={drive:'2wd',shape:'square',place:'outside',wheel:'thin',dia:70,arr:'b2b',axle:'center',wb:100,spin:false,
 caster:'c34',spacer:'none',deck:3,mat:'acrylic',mount:'pololu',pos:'above',adj:0};
 const WW={thin:8,medium:15,wide:25,track:20};
+const rev={body:false,drive:false,qtr:false,cam:false,tof:false};
+const LAYER={shape:'body',deck:'body',mat:'body',drive:'drive',place:'drive',wheel:'drive',dia:'drive',arr:'drive',axle:'drive',caster:'drive',spacer:'drive',mount:'drive',pos:'drive'};
+const SAMPLES=[['Classic square',{drive:'2wd',shape:'square',place:'outside',wheel:'thin',axle:'center',arr:'b2b',dia:70}],
+['XRP-style U',{drive:'2wd',shape:'u',place:'wells',wheel:'medium',axle:'center',arr:'b2b',dia:70}],
+['4WD box',{drive:'4wd4',shape:'rect',place:'inside',wheel:'medium',arr:'b2b',dia:70,wb:100}],
+['4WD belts',{drive:'4wd2',shape:'rect',place:'outside',wheel:'wide',arr:'b2b',dia:70,wb:100}],
+['Tank tracks',{drive:'2wd',shape:'rect',place:'outside',wheel:'track',arr:'b2b'}],
+['Narrow staggered',{drive:'2wd',shape:'square',place:'inside',wheel:'wide',axle:'rear',arr:'stag',dia:80}]];
+SAMPLES.forEach(([t,p],i)=>{const b=document.createElement('button');b.textContent=t;b.dataset.sample=i;b.onclick=()=>preset(p);document.getElementById('g-samples').appendChild(b)});
 for(const k in opts){const g=document.getElementById('g-'+k);opts[k].forEach(([v,t])=>{const b=document.createElement('button');b.textContent=t;b.dataset.k=k;b.dataset.v=String(v);
- b.onclick=()=>{st[k]=v;if(k==='deck')document.getElementById('deckc').value=v;if(k==='pos'||k==='mount')st.adj=0;draw()};g.appendChild(b)})}
+ b.onclick=()=>{st[k]=v;rev[LAYER[k]]=true;if(k==='deck')document.getElementById('deckc').value=v;if(k==='pos'||k==='mount')st.adj=0;draw()};g.appendChild(b)})}
 const addHint=(row,id)=>{const s=document.createElement('span');s.className='hint';s.id=id;document.getElementById(row).appendChild(s)};
 addHint('g-axle','axle-hint');addHint('g-spacer','spacer-hint');addHint('g-pos','pos-hint');
 document.getElementById('g-deck').insertAdjacentHTML('beforeend','<label class="hint" for="deckc">Custom</label><input type="number" id="deckc" min="1" max="12" step="0.5" value="3"><span class="hint">mm</span>');
-document.getElementById('deckc').addEventListener('input',e=>{const v=parseFloat(e.target.value);if(v>=1&&v<=12){st.deck=v;draw()}});
+document.getElementById('deckc').addEventListener('input',e=>{const v=parseFloat(e.target.value);if(v>=1&&v<=12){st.deck=v;rev.body=true;draw()}});
 document.getElementById('g-adj').insertAdjacentHTML('beforeend','<button id="levelbtn">Make level</button>');
 document.getElementById('levelbtn').addEventListener('click',makeLevel);
 document.getElementById('g-wb').appendChild(document.getElementById('wb-hint'));
-function preset(p){Object.assign(st,p);document.getElementById('wb').value=st.wb;draw()}
+function preset(p){Object.assign(st,p);rev.body=rev.drive=true;document.getElementById('wb').value=st.wb;draw()}
 let curStep=1,curView='top';
 function go(n,noScroll){curStep=n;[1,2,3].forEach(i=>{document.getElementById('step'+i).hidden=n!==i;document.getElementById('tab'+i).classList.toggle('on',n===i)});draw();if(!noScroll&&window.matchMedia('(max-width:900px)').matches)document.getElementById('tab'+n).scrollIntoView({block:'start'})}
 function setView(v){curView=v;document.getElementById('top3').toggleAttribute('hidden',v!=='top');document.getElementById('side3').toggleAttribute('hidden',v!=='side');
@@ -273,7 +275,7 @@ function R(x1,y1,x2,y2,a){return `<rect x="${X(Math.min(x1,x2))}" y="${Y(Math.mi
 const tile=(k,v,c)=>`<div class="tile"><div class="k">${k}</div><div class="v"${c?` style="color:${c}"`:''}>${v}</div></div>`;
 const r1=x=>Math.round(x*10)/10;
 let G={},FIX={};
-document.addEventListener('click',e=>{const b=e.target.closest('[data-fix]');if(!b||!FIX[b.dataset.fix])return;const f=FIX[b.dataset.fix];if(f.caster){st.caster=f.caster;st.spacer=f.spacer}st.adj=f.adj;draw()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-fix]');if(!b||!FIX[b.dataset.fix])return;const f=FIX[b.dataset.fix];if(f.caster){st.caster=f.caster;st.spacer=f.spacer}st.adj=f.adj;rev.drive=true;draw()});
 const base=()=>st.mount==='print'?15.5:14.5;
 function mountOffset(){const T=st.deck,a=st.adj;
  if(st.pos==='above')return T+base()+a;
@@ -283,17 +285,19 @@ function adjForOffset(o){const T=st.deck;
  if(st.pos==='above')return o-T-base();
  if(st.pos==='below')return -base()-o;
  return T/2-o}
-function makeLevel(){if(!G.hasCaster)return;const el=document.getElementById('adj');const v=Math.round(adjForOffset(G.hR-G.Hc));
+function makeLevel(){if(!G.hasCaster)return;rev.drive=true;const el=document.getElementById('adj');const v=Math.round(adjForOffset(G.hR-G.Hc));
  if(v>=+el.min&&v<=+el.max){st.adj=v;draw()}else draw('No setting in range makes this level.')}
 function draw(msg){
-document.querySelectorAll('button[data-k]').forEach(b=>b.classList.toggle('on',String(st[b.dataset.k])===b.dataset.v));
+const RB=rev.body,RD=rev.drive,ANY=RB||RD;
+document.querySelectorAll('button[data-k]').forEach(b=>b.classList.toggle('on',rev[LAYER[b.dataset.k]]&&String(st[b.dataset.k])===b.dataset.v));
+document.querySelectorAll('button[data-sample]').forEach(b=>{const p=SAMPLES[+b.dataset.sample][1];b.classList.toggle('on',RB&&RD&&Object.keys(p).every(k=>String(st[k])===String(p[k])))});
 document.getElementById('spinbtn').classList.toggle('on',st.spin);
 document.getElementById('wbv').textContent=st.wb+' mm';
 const trk=st.wheel==='track',w=WW[st.wheel];
 const drv=trk?'trk':st.drive,four=drv==='4wd4'||drv==='4wd2';
 const p3=st.mount==='print';
 if(!p3&&st.pos==='between'){st.pos='above';st.adj=0}
-document.querySelectorAll('button[data-k=pos]').forEach(b=>{if(b.dataset.v==='between'){b.classList.toggle('on',st.pos==='between');b.style.opacity=p3?'':'0.45'}});
+document.querySelectorAll('button[data-k=pos]').forEach(b=>{if(b.dataset.v==='between'){b.classList.toggle('on',RD&&st.pos==='between');b.style.opacity=p3?'':'0.45'}});
 document.getElementById('pos-hint').textContent=p3?'':'In between: 3D-printed cradle only';
 const adjEl=document.getElementById('adj');
 if(st.pos==='between'){adjEl.min=-9;adjEl.max=9;document.getElementById('adj-l').textContent='Deck depth'}
@@ -318,7 +322,7 @@ const cs=CASTERS[st.caster],Hc=cs.h+(st.caster==='c34'?SPACER[st.spacer]:0);
 document.getElementById('levelbtn').hidden=!hasCaster;
 const lab=(k)=>opts[k].find(o=>String(o[0])===String(st[k]))[1];
 document.getElementById('summary').textContent='From step 1: '+[lab('drive'),lab('shape'),trk?'tracks':st.dia+' mm wheels',lab('place').toLowerCase(),stag?'staggered motors':'back-to-back motors'].join(' · ');
-if(st.shape==='round'&&four){
+if(RB&&RD&&st.shape==='round'&&four){
  warn.hidden=false;
  svg.innerHTML=`<text x="340" y="235" text-anchor="middle" style="font-size:15px;fill:var(--bad)">Round + 4WD: not a workable layout</text><text x="340" y="260" text-anchor="middle">Choose a different shape or 2WD.</text>`;
  out.innerHTML=tile('Overall width','over 225 mm','var(--bad)')+tile('Width limit','225 mm');
@@ -352,51 +356,51 @@ else if(st.shape==='u'){nw=0.22*2*hw;const d=Math.max(12,Math.min(0.3*L,ymin+L/2
  body=`<path d="M${X(-hw)} ${Y(t)} H${X(-nw)} V${Y(t+d)} H${X(nw)} V${Y(t)} H${X(hw)} V${Y(L/2)} H${X(-hw)} Z"/>`}
 else body=`<rect x="${X(-hw)}" y="${Y(-L/2)}" width="${2*hw*S}" height="${L*S}" rx="8"/>`;
 const cx2=st.place==='wells'?hw+6:wo+3;
-let cuts='';if(st.place!=='outside')wheels.forEach(q=>cuts+=R(q.s*(wi-3),q.y0-4,q.s*cx2,q.y1+4));
+let cuts='';if(RB&&RD&&st.place!=='outside')wheels.forEach(q=>cuts+=R(q.s*(wi-3),q.y0-4,q.s*cx2,q.y1+4));
 let h=`<defs><mask id="mk"><rect x="0" y="0" width="680" height="490" fill="#fff"/><g fill="#000">${cuts}</g></mask><clipPath id="cp">${body}</clipPath></defs>`;
 let cy=0;
 if(drv==='2wd')cy=wheels.reduce((s,q)=>s+q.yc,0)/wheels.length;
-if(st.spin)h+=R(-150,cy-150,150,cy+150,'fill="none" stroke="var(--line)" stroke-width="1.5"')+`<text x="${X(-146)}" y="${Y(cy-150)+14}">30 cm tile</text>`;
-[-112.5,112.5].forEach(x=>h+=`<line x1="${X(x)}" y1="12" x2="${X(x)}" y2="478" stroke="var(--limit)" stroke-width="1" stroke-dasharray="6 4"/>`);
-h+=`<g fill="var(--body)" stroke="var(--body-line)" stroke-width="1" mask="url(#mk)">${body}</g>`;
+if(ANY&&st.spin)h+=R(-150,cy-150,150,cy+150,'fill="none" stroke="var(--line)" stroke-width="1.5"')+`<text x="${X(-146)}" y="${Y(cy-150)+14}">30 cm tile</text>`;
+if(ANY)[-112.5,112.5].forEach(x=>h+=`<line x1="${X(x)}" y1="12" x2="${X(x)}" y2="478" stroke="var(--limit)" stroke-width="1" stroke-dasharray="6 4"/>`);
+if(RB)h+=`<g fill="var(--body)" stroke="var(--body-line)" stroke-width="1" mask="url(#mk)">${body}</g>`;
 if(cuts)h+=`<g clip-path="url(#cp)" fill="none" stroke="var(--body-line)" stroke-width="1">${cuts}</g>`;
 let m='';motors.forEach(({s,y})=>{m+=R(s*(wf-67),y-12.5,s*wf,y+12.5,'rx="2"');m+=R(s*wf,y-2,s*(wf+12.5),y+2)});
-h+=`<g fill="var(--motor)" stroke="var(--motor-line)" stroke-width="0.6">${m}</g>`;
+if(RD)h+=`<g fill="var(--motor)" stroke="var(--motor-line)" stroke-width="0.6">${m}</g>`;
 let mt='';
 if(p3)motors.forEach(({s,y})=>mt+=R(s*(wf-70),y-15.5,s*(wf+3),y+15.5,'rx="3"'));
 else motors.forEach(({s,y})=>{mt+=R(s*(wf-52),y-10.85,s*wf,y+10.85);mt+=R(s*wf,y-12.5,s*(wf+2),y+12.5)});
-h+=`<g fill="none" stroke="var(--body-line)" stroke-width="1" stroke-dasharray="3 2">${mt}</g>`;
-if(drv==='4wd2'){let ax2='';[1,-1].forEach(s=>ax2+=R(s*(wi-18),-A-2,s*wi,-A+2));h+=`<g fill="var(--body-line)">${ax2}</g>`}
+if(RD)h+=`<g fill="none" stroke="var(--body-line)" stroke-width="1" stroke-dasharray="3 2">${mt}</g>`;
+if(RD&&drv==='4wd2'){let ax2='';[1,-1].forEach(s=>ax2+=R(s*(wi-18),-A-2,s*wi,-A+2));h+=`<g fill="var(--body-line)">${ax2}</g>`}
 let wh='';wheels.forEach(q=>wh+=R(q.s*wi,q.y0,q.s*wo,q.y1,`rx="${trk?8:3}"`));
-h+=`<g fill="var(--wheel)" stroke="var(--wheel-line)" stroke-width="0.8">${wh}</g>`;
-if(trk){let tl='';[1,-1].forEach(s=>{for(let y=-62;y<66;y+=10)tl+=`<line x1="${X(s*wi)}" y1="${Y(y)}" x2="${X(s*wo)}" y2="${Y(y)}"/>`});h+=`<g stroke="var(--wheel-line)" stroke-width="0.6" opacity="0.6">${tl}</g>`}
-if(drv==='4wd2'){let bl='';[1,-1].forEach(s=>{const ys=wheels.filter(q=>q.s===s).map(q=>q.yc);bl+=R(s*(wi+1),Math.min(...ys)-6,s*(wo-1),Math.max(...ys)+6,'rx="4"')});h+=`<g fill="none" stroke="var(--belt)" stroke-width="2" stroke-dasharray="5 3">${bl}</g>`}
+if(RD)h+=`<g fill="var(--wheel)" stroke="var(--wheel-line)" stroke-width="0.8">${wh}</g>`;
+if(RD&&trk){let tl='';[1,-1].forEach(s=>{for(let y=-62;y<66;y+=10)tl+=`<line x1="${X(s*wi)}" y1="${Y(y)}" x2="${X(s*wo)}" y2="${Y(y)}"/>`});h+=`<g stroke="var(--wheel-line)" stroke-width="0.6" opacity="0.6">${tl}</g>`}
+if(RD&&drv==='4wd2'){let bl='';[1,-1].forEach(s=>{const ys=wheels.filter(q=>q.s===s).map(q=>q.yc);bl+=R(s*(wi+1),Math.min(...ys)-6,s*(wo-1),Math.max(...ys)+6,'rx="4"')});h+=`<g fill="none" stroke="var(--belt)" stroke-width="2" stroke-dasharray="5 3">${bl}</g>`}
 let casters=[];
 if(hasCaster){const e=L/2-cs.f/2-6,am=st.shape==='u'?(nw+hw)/2:0;
  const front=st.shape==='u'?[[am,-e],[-am,-e]]:[[0,-e]],rear=[[0,e]];
  if(st.axle==='center')casters=front.concat(rear);else if(st.axle==='front')casters=rear;else casters=front;
- h+=`<g fill="var(--caster)" stroke="var(--caster-line)" stroke-width="0.6">${casters.map(([a,b])=>`<circle cx="${X(a)}" cy="${Y(b)}" r="${cs.d/2*S}"/>`).join('')}</g>`}
+ if(RD)h+=`<g fill="var(--caster)" stroke="var(--caster-line)" stroke-width="0.6">${casters.map(([a,b])=>`<circle cx="${X(a)}" cy="${Y(b)}" r="${cs.d/2*S}"/>`).join('')}</g>`}
 let SR=0;
 if(st.shape==='round')SR=hw+Math.abs(cy);else SR=Math.hypot(hw,L/2+Math.abs(cy));
 wheels.forEach(q=>SR=Math.max(SR,Math.hypot(wo,Math.max(Math.abs(q.y0-cy),Math.abs(q.y1-cy)))));
 motors.forEach(({y})=>SR=Math.max(SR,Math.hypot(wf+12.5,Math.abs(y-cy)+12.5)));
-if(st.spin)h+=`<circle cx="${X(0)}" cy="${Y(cy)}" r="${SR*S}" fill="none" stroke="var(--spin)" stroke-width="1.5" stroke-dasharray="3 4"/><circle cx="${X(0)}" cy="${Y(cy)}" r="3" fill="var(--spin)"/>`;
+if(ANY&&st.spin)h+=`<circle cx="${X(0)}" cy="${Y(cy)}" r="${SR*S}" fill="none" stroke="var(--spin)" stroke-width="1.5" stroke-dasharray="3 4"/><circle cx="${X(0)}" cy="${Y(cy)}" r="3" fill="var(--spin)"/>`;
 const hBase=h;
 const lx=500;
-const lg=[['var(--motor)','var(--motor-line)','25D motor, 25 × 67 mm'],['var(--wheel)','var(--wheel-line)',trk?'Track':`Wheel, ${D} mm dia.`],['var(--body)','var(--body-line)','Body / chassis']];
-if(hasCaster)lg.push(['var(--caster)','var(--caster-line)',`Ball caster, ${cs.n}`]);
+const lg=[];if(RD)lg.push(['var(--motor)','var(--motor-line)','25D motor, 25 × 67 mm'],['var(--wheel)','var(--wheel-line)',trk?'Track':`Wheel, ${D} mm dia.`]);if(RB)lg.push(['var(--body)','var(--body-line)','Body / chassis']);
+if(RD&&hasCaster)lg.push(['var(--caster)','var(--caster-line)',`Ball caster, ${cs.n}`]);
 let ly=40;lg.forEach(([f,s,t])=>{h+=`<rect x="${lx}" y="${ly-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${ly}" dominant-baseline="central">${t}</text>`;ly+=26});
 const line=(c,dash,t,wid)=>{h+=`<line x1="${lx}" y1="${ly}" x2="${lx+16}" y2="${ly}" stroke="${c}" stroke-width="${wid}" stroke-dasharray="${dash}"/><text x="${lx+24}" y="${ly}" dominant-baseline="central">${t}</text>`;ly+=26};
-line('var(--body-line)','3 2',p3?'Printed cradle':'Bracket #2676',1);
-if(drv==='4wd2')line('var(--belt)','5 3','Belt or gear train',2);
-line('var(--limit)','4 3','225 mm width limit',1);
-if(st.spin)line('var(--spin)','3 4','Spin circle',1.5);
+if(RD)line('var(--body-line)','3 2',p3?'Printed cradle':'Bracket #2676',1);
+if(RD&&drv==='4wd2')line('var(--belt)','5 3','Belt or gear train',2);
+if(ANY)line('var(--limit)','4 3','225 mm width limit',1);
+if(ANY&&st.spin)line('var(--spin)','3 4','Spin circle',1.5);
 const mc=drv==='4wd4'?4:2;
-h+=`<text x="${lx}" y="${ly+16}">Front is up. Motors: ${mc}.</text><text x="${lx}" y="${ly+34}">To scale; clearances</text><text x="${lx}" y="${ly+50}">approximate.</text>`;
+if(RD)h+=`<text x="${lx}" y="${ly+16}">Front is up. Motors: ${mc}.</text><text x="${lx}" y="${ly+34}">To scale; clearances</text><text x="${lx}" y="${ly+50}">approximate.</text>`;
 svg.innerHTML=h;
 const leg1=h.slice(hBase.length);
 const W=Math.round(2*Math.max(hw,wo)),ok=W<=225,SD=Math.round(2*SR);
-out.innerHTML=tile('Overall width ≈',W+' mm',ok?'var(--ok)':'var(--bad)')+tile('Body length ≈',Math.round(L)+' mm')+tile('Spin circle ≈',SD+' mm',SD<=300?'var(--ok)':'var(--bad)')+(stag&&!trk?tile('Wheel offset ≈',Math.round(2*OF)+' mm'):'');
+out.innerHTML=!(RB&&RD)?`<p class="summary">${RB?'Choose a drive to see sizes.':RD?'Choose a shape to see sizes.':'Pick a sample, or choose a shape and a drive.'}</p>`:tile('Overall width ≈',W+' mm',ok?'var(--ok)':'var(--bad)')+tile('Body length ≈',Math.round(L)+' mm')+tile('Spin circle ≈',SD+' mm',SD<=300?'var(--ok)':'var(--bad)')+(stag&&!trk?tile('Wheel offset ≈',Math.round(2*OF)+' mm'):'');
 G={hR,Hc,hasCaster};
 /* ---------- side view ---------- */
 if(trk){sv.innerHTML=`<text x="340" y="150" text-anchor="middle">Side view needs real track dimensions, so it is not drawn for tracks.</text>`;out2.innerHTML='';stat.innerHTML='';G.bad='The side view and step 3 need real track dimensions, so they are not drawn for tracks. Choose wheels in step 1.';G.topOnly=svg.innerHTML;draw3();return}
@@ -421,19 +425,19 @@ let brk=180;for(let i=0;i<uniq.length-1;i++){const l=uniq[i+1]-uniq[i];if(l<1)co
 const S2=2,X2=m=>340+m*S2,Z2=z=>262-z*S2;
 const RR=(x1,z1,x2,z2,a)=>`<rect x="${X2(Math.min(x1,x2))}" y="${Z2(Math.max(z1,z2))}" width="${Math.abs(x2-x1)*S2}" height="${Math.abs(z2-z1)*S2}" ${a||''}/>`;
 let g='';
-g+=`<line x1="20" y1="${Z2(10)}" x2="660" y2="${Z2(10)}" stroke="var(--limit)" stroke-width="1" stroke-dasharray="4 3"/><text x="660" y="${Z2(10)-5}" text-anchor="end">10 mm speed bump</text>`;
-g+=`<line x1="20" y1="${Z2(0)}" x2="660" y2="${Z2(0)}" stroke="var(--fg)" stroke-width="1.2"/><text x="660" y="${Z2(0)+16}" text-anchor="end">Floor</text>`;
-g+=`<g fill="var(--body)" stroke="var(--body-line)" stroke-width="1">${RR(-L/2,dBot,L/2,dTop)}</g>`;
+if(ANY)g+=`<line x1="20" y1="${Z2(10)}" x2="660" y2="${Z2(10)}" stroke="var(--limit)" stroke-width="1" stroke-dasharray="4 3"/><text x="660" y="${Z2(10)-5}" text-anchor="end">10 mm speed bump</text>`;
+if(ANY)g+=`<line x1="20" y1="${Z2(0)}" x2="660" y2="${Z2(0)}" stroke="var(--fg)" stroke-width="1.2"/><text x="660" y="${Z2(0)+16}" text-anchor="end">Floor</text>`;
+if(RB)g+=`<g fill="var(--body)" stroke="var(--body-line)" stroke-width="1">${RR(-L/2,dBot,L/2,dTop)}</g>`;
 let mm='';
-nearM.forEach(({y})=>{
+if(RD)nearM.forEach(({y})=>{
  if(p3)mm+=RR(y-15.5,mBot,y+15.5,mTop,'rx="3"');
  else if(st.pos==='above'){const fb=dTop+st.adj;if(st.adj)mm+=RR(y-10.85,dTop,y+10.85,fb);mm+=RR(y-12.5,fb,y+12.5,fb+27,'rx="10"')}
  else{const ft=dBot-st.adj;if(st.adj)mm+=RR(y-10.85,ft,y+10.85,dBot);mm+=RR(y-12.5,ft-27,y+12.5,ft,'rx="10"')}});
 g+=`<g fill="none" stroke="var(--body-line)" stroke-width="1" stroke-dasharray="3 2">${mm}</g>`;
-g+=`<g fill="var(--motor)" stroke="var(--motor-line)" stroke-width="0.8">${nearM.map(({y})=>`<circle cx="${X2(y)}" cy="${Z2(hR)}" r="${12.5*S2}"/>`).join('')}</g>`;
-g+=`<g fill="var(--wheel)" fill-opacity="0.25" stroke="var(--wheel-line)" stroke-width="1.2">${nearW.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="${hR*S2}"/>`).join('')}</g>`;
-g+=`<g fill="var(--wheel-line)">${nearW.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="2.5"/>`).join('')}</g>`;
-if(hasCaster){let cg='';const sp=Hc-cs.h;
+if(RD)g+=`<g fill="var(--motor)" stroke="var(--motor-line)" stroke-width="0.8">${nearM.map(({y})=>`<circle cx="${X2(y)}" cy="${Z2(hR)}" r="${12.5*S2}"/>`).join('')}</g>`;
+if(RD)g+=`<g fill="var(--wheel)" fill-opacity="0.25" stroke="var(--wheel-line)" stroke-width="1.2">${nearW.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="${hR*S2}"/>`).join('')}</g>`;
+if(RD)g+=`<g fill="var(--wheel-line)">${nearW.map(q=>`<circle cx="${X2(q.yc)}" cy="${Z2(hR)}" r="2.5"/>`).join('')}</g>`;
+if(RD&&hasCaster){let cg='';const sp=Hc-cs.h;
  cys.forEach(y=>{const ballBot=dBot-Hc,ballC=ballBot+cs.b/2,hb=ballC+cs.b*0.2;
   if(sp>0)cg+=RR(y-cs.d/2,dBot-sp,y+cs.d/2,dBot,'fill="none" stroke-dasharray="2 2"');
   cg+=RR(y-cs.f/2,hb,y+cs.f/2,dBot-sp,'rx="2"');
@@ -461,26 +465,29 @@ if(hasCaster){const need=adjForOffset(hR-Hc),ab=Math.abs(gap),lvl=ab<0.5;
   else sHtml+=`No caster or ${al} in range makes this level. Try ${gap>0?'a smaller wheel':'a bigger wheel'} or another mount position.`}}
 else sHtml=`<strong class="ok">No casters.</strong> All wheels touch the floor, so the deck is level by design.`;
 if(msg)sHtml+=` <strong class="bad">${msg}</strong>`;
+if(!(RB&&RD))sHtml=`<span class="summary">${RB?'Choose a drive in step 1 to check the level.':'Choose a shape and a drive in step 1 to check the level.'}</span>`;
 stat.innerHTML=sHtml;
-G.levelHtml=hasCaster&&Math.abs(gap)>=0.5?sHtml:'';
+G.levelHtml=RB&&RD&&hasCaster&&Math.abs(gap)>=0.5?sHtml:'';
 const okA=a=>a>=25?'var(--ok)':'var(--bad)';
-out2.innerHTML=tile('Lowest point ≈',r1(low)+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck underside ≈',r1(dBot)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm')
+out2.innerHTML=!(RB&&RD)?'':tile('Lowest point ≈',r1(low)+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck underside ≈',r1(dBot)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm')
  +tile('Approach ≈',appr>=89?'no overhang':Math.round(appr)+'°',okA(appr))+tile('Departure ≈',dep>=89?'no overhang':Math.round(dep)+'°',okA(dep))+tile('Break-over ≈',brk>=179?'n/a':Math.round(brk)+'°',okA(brk));
-Object.assign(G,{bad:null,leg1,nw,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
+Object.assign(G,{bad:null,rb:RB,rd:RD,leg1,nw,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
 draw3();
 }
 /* ---------- step 3: front sensors ---------- */
 const st3={qs:15,qh:10,cs:20,ch:120,ct:35,lh:40,l4h:30,l4f:true,l4l:false,l4r:false};
 const QTR={w:61,d:20,t:3},CAM={h:45,w:36,d:29,hv:25.9,hh:32.95},L8={w:23,h:13,t:3,hf:22.5},L4={w:12.7,h:17.8,t:2.2,hf:9};
 const rad=a=>a*Math.PI/180;
-function s3(k,v){st3[k]=v;draw3()}
+const L3={qs:'qtr',qh:'qtr',cs:'cam',ch:'cam',ct:'cam',lh:'tof',l4h:'tof',l4f:'tof',l4l:'tof',l4r:'tof'};
+function s3(k,v){st3[k]=v;rev[L3[k]]=true;draw3()}
 function draw3(){
 const $=id=>document.getElementById(id);
 [['qs',' mm'],['qh',' mm'],['cs',' mm'],['ch',' mm'],['ct','°'],['lh',' mm'],['l4h',' mm']].forEach(([k,u])=>{$(k).value=st3[k];$(k+'v').textContent=st3[k]+u});
-['l4f','l4l','l4r'].forEach(k=>$(k).classList.toggle('on',st3[k]));
+['l4f','l4l','l4r'].forEach(k=>$(k).classList.toggle('on',rev.tof&&st3[k]));
 $('summary3').textContent=$('summary').textContent;
 const top=$('top3'),side=$('side3'),out=$('out3'),stat=$('status3');
 if(!G||G.bad){const m=`<text x="340" y="100" text-anchor="middle">${G&&G.bad?G.bad:''}</text>`;top.innerHTML=G&&G.topOnly?G.topOnly:m;side.innerHTML=m;document.getElementById('cgline').textContent='Center of balance needs the side view, so it is not shown for this layout.';out.innerHTML='';stat.innerHTML=G&&G.bad?G.bad:'';persist();return}
+const RQ=rev.qtr,RC=rev.cam,RT=rev.tof,f4=RT&&st3.l4f,l4=RT&&st3.l4l,r4=RT&&st3.l4r;
 const g=G,F=-g.L/2,Fc=F+(g.shape==='u'?g.nd:0),bad=[],watch=[];
 const X2=m=>340+m*2,Z2=z=>262-z*2;
 const RR=(x1,z1,x2,z2,a)=>`<rect x="${X2(Math.min(x1,x2))}" y="${Z2(Math.max(z1,z2))}" width="${Math.abs(x2-x1)*2}" height="${Math.abs(z2-z1)*2}" ${a||''}/>`;
@@ -488,11 +495,11 @@ const pts=a=>a.map(([y,z])=>`${X2(y)},${Z2(z)}`).join(' ');
 /* QTR */
 const qyc=Fc+st3.qs,qy0=qyc-QTR.d/2,qy1=qyc+QTR.d/2,qx=QTR.w/2,qz0=st3.qh,qz1=st3.qh+QTR.t;
 const qUnder=qy1>Fc+0.5;
-if(qz0>40)bad.push('The QTR is higher than Pololu’s 40 mm maximum sensing distance.');
-if(qUnder&&qz1>g.dBot+0.05)bad.push(`The QTR top would be ${r1(qz1-g.dBot)} mm above the deck underside. Lower it, cut a slot, or move it ahead of the deck.`);
-if(g.casters.some(([x,y])=>{const nx=Math.max(-qx,Math.min(qx,x)),ny=Math.max(qy0,Math.min(qy1,y));return Math.hypot(x-nx,y-ny)<g.cs.f/2}))bad.push('The QTR overlaps a caster. Move it forward or back.');
-if(st.pos!=='above'&&g.motors.some(({s,y})=>{const a=s*(g.wf-67),b=s*(g.wf+12.5);return Math.min(a,b)<qx&&Math.max(a,b)>-qx&&y-12.5<qy1&&y+12.5>qy0}))bad.push('The QTR overlaps a motor mounted under the deck.');
-if(qz0<10)watch.push(`The QTR face is ${r1(qz0)} mm off the floor, below the 10 mm speed-bump height, so a bump can hit it before the wheels climb.`);
+if(RQ&&qz0>40)bad.push('The QTR is higher than Pololu’s 40 mm maximum sensing distance.');
+if(RQ&&qUnder&&qz1>g.dBot+0.05)bad.push(`The QTR top would be ${r1(qz1-g.dBot)} mm above the deck underside. Lower it, cut a slot, or move it ahead of the deck.`);
+if(RQ&&G.rd&&g.casters.some(([x,y])=>{const nx=Math.max(-qx,Math.min(qx,x)),ny=Math.max(qy0,Math.min(qy1,y));return Math.hypot(x-nx,y-ny)<g.cs.f/2}))bad.push('The QTR overlaps a caster. Move it forward or back.');
+if(RQ&&G.rd&&st.pos!=='above'&&g.motors.some(({s,y})=>{const a=s*(g.wf-67),b=s*(g.wf+12.5);return Math.min(a,b)<qx&&Math.max(a,b)>-qx&&y-12.5<qy1&&y+12.5>qy0}))bad.push('The QTR overlaps a motor mounted under the deck.');
+if(RQ&&qz0<10)watch.push(`The QTR face is ${r1(qz0)} mm off the floor, below the 10 mm speed-bump height, so a bump can hit it before the wheels climb.`);
 const qAhead=g.cy-qyc;
 /* camera */
 const t=rad(st3.ct),u=[-Math.cos(t),-Math.sin(t)],p=[-Math.sin(t),Math.cos(t)];
@@ -500,120 +507,122 @@ const yL=Fc+st3.cs,zL=st3.ch,hh=CAM.h/2;
 const fc=[[yL+hh*p[0],zL+hh*p[1]],[yL-hh*p[0],zL-hh*p[1]]];
 const cor=[...fc,...fc.slice().reverse().map(([y,z])=>[y-CAM.d*u[0],z-CAM.d*u[1]])];
 const cz0=Math.min(...cor.map(c=>c[1])),cz1=Math.max(...cor.map(c=>c[1])),cy0=Math.min(...cor.map(c=>c[0])),cy1=Math.max(...cor.map(c=>c[0]));
-if(cz1>225)bad.push(`The camera top is ${Math.round(cz1)} mm up, over the 225 mm height target.`);
-if(cy1>Fc&&cy0<g.L/2&&cz0<g.dTop)bad.push('The camera dips into the deck. Raise it or tilt it less.');
-if(cz0<qz1+1&&cy0<qy1&&cy1>qy0)bad.push('The camera runs into the QTR.');
+if(RC&&cz1>225)bad.push(`The camera top is ${Math.round(cz1)} mm up, over the 225 mm height target.`);
+if(RC&&G.rb&&cy1>Fc&&cy0<g.L/2&&cz0<g.dTop)bad.push('The camera dips into the deck. Raise it or tilt it less.');
+if(RC&&RQ&&cz0<qz1+1&&cy0<qy1&&cy1>qy0)bad.push('The camera runs into the QTR.');
 const p1=st3.ct+CAM.hv,p2=st3.ct-CAM.hv;
 const dN=zL/Math.tan(rad(p1)),dF=p2<=0.01?Infinity:zL/Math.tan(rad(p2));
 const halfW=d=>{const ph=Math.atan2(zL,d);return Math.hypot(zL,d)*Math.cos(ph-t)*Math.tan(rad(CAM.hh))};
 const aN=dN-st3.cs,aF=dF-st3.cs;
-if(aN<0)watch.push('The bottom of the camera image looks back under the robot, so the deck or QTR may fill part of the picture.');
-if(dF===Infinity)watch.push('The top of the camera image is above the horizon. Tilt down more to keep the picture on the floor.');
+if(RC&&aN<0)watch.push('The bottom of the camera image looks back under the robot, so the deck or QTR may fill part of the picture.');
+if(RC&&dF===Infinity)watch.push('The top of the camera image is above the horizon. Tilt down more to keep the picture on the floor.');
 /* VL53L8CX */
 const lz=st3.lh,ly=Fc-L8.t,tan8=Math.tan(rad(L8.hf)),l8floor=lz/tan8;
-if(qy0<ly&&lz-(ly-qy0)*tan8<=qz1)bad.push('The QTR sticks out into the VL53L8CX’s view and will read as an obstacle.');
-if(cy0<Fc&&cz0<lz+L8.h/2&&cz1>lz-L8.h/2)bad.push('The camera sits in front of the VL53L8CX.');
+if(RT&&RQ&&qy0<ly&&lz-(ly-qy0)*tan8<=qz1)bad.push('The QTR sticks out into the VL53L8CX’s view and will read as an obstacle.');
+if(RT&&RC&&cy0<Fc&&cz0<lz+L8.h/2&&cz1>lz-L8.h/2)bad.push('The camera sits in front of the VL53L8CX.');
 /* VL53L4CD */
 const tan4=Math.tan(rad(L4.hf)),l4z=st3.l4h,l4floor=l4z/tan4,yS=F+30;
 const xe=g.shape==='round'?Math.sqrt(Math.max(0,g.hw*g.hw-yS*yS)):g.hw;
-const any4=st3.l4f||st3.l4l||st3.l4r;
-if(st3.l4f&&cy0<Fc&&cz0<l4z+L4.h/2&&cz1>l4z-L4.h/2)bad.push('The camera sits in front of the front VL53L4CD.');
-[['l4l',-1,'left'],['l4r',1,'right']].forEach(([k,s,n])=>{if(!st3[k])return;
+const any4=f4||l4||r4;
+if(RC&&f4&&cy0<Fc&&cz0<l4z+L4.h/2&&cz1>l4z-L4.h/2)bad.push('The camera sits in front of the front VL53L4CD.');
+[['l4l',-1,'left'],['l4r',1,'right']].forEach(([k,s,n])=>{if(!(RT&&st3[k])||!G.rd)return;
  if(g.wheels.some(q=>q.s===s&&g.wo>xe&&yS>=q.y0-6.35&&yS<=q.y1+6.35&&l4z-L4.h/2<g.D))bad.push(`The ${n} VL53L4CD is behind the ${n} wheel. Move it up or choose another spot.`)});
 if(any4&&l4z+L4.h/2>225)bad.push('A VL53L4CD is over the 225 mm height target.');
 /* extents */
-const ext=[[qx,qy0],[qx,qy1],[CAM.w/2,cy0],[CAM.w/2,cy1],[L8.w/2,ly]];
-if(st3.l4f)ext.push([20+L4.w/2,Fc-L4.t]);
-if(st3.l4l||st3.l4r)ext.push([xe+L4.t,yS-L4.w/2],[xe+L4.t,yS+L4.w/2]);
+const ext=[];if(RQ)ext.push([qx,qy0],[qx,qy1]);if(RC)ext.push([CAM.w/2,cy0],[CAM.w/2,cy1]);if(RT)ext.push([L8.w/2,ly]);
+if(f4)ext.push([20+L4.w/2,Fc-L4.t]);
+if(l4||r4)ext.push([xe+L4.t,yS-L4.w/2],[xe+L4.t,yS+L4.w/2]);
 let SR3=g.SR;ext.forEach(([x,y])=>SR3=Math.max(SR3,Math.hypot(x,y-g.cy)));
-const front=Math.min(F,qy0,cy0,ly,st3.l4f?Fc-L4.t:F),len=g.L/2-front;
-const Wd=Math.round(Math.max(g.W,st3.l4l||st3.l4r?2*(xe+L4.t):0,2*qx,CAM.w));
-const Ht=Math.max(g.stackTop,cz1,lz+L8.h/2,any4?l4z+L4.h/2:0);
+const front=Math.min(F,RQ?qy0:F,RC?cy0:F,RT?ly:F,f4?Fc-L4.t:F),len=g.L/2-front;
+const Wd=Math.round(Math.max(g.W,l4||r4?2*(xe+L4.t):0,RQ?2*qx:0,RC?CAM.w:0));
+const Ht=Math.max(g.stackTop,RC?cz1:0,RT?lz+L8.h/2:0,any4?l4z+L4.h/2:0);
 /* top view */
 let h=g.hBase;
-[-112.5,112.5].forEach(x=>h+=`<line x1="${X(x)}" y1="-270" x2="${X(x)}" y2="12" stroke="var(--limit)" stroke-width="1" stroke-dasharray="6 4"/>`);
-if(dN<Math.min(dF,700)){const dFF=Math.min(dF,700),wN=halfW(dN),wF=halfW(dFF);
+if(G.rb||G.rd||RQ||RC||RT)[-112.5,112.5].forEach(x=>h+=`<line x1="${X(x)}" y1="-270" x2="${X(x)}" y2="12" stroke="var(--limit)" stroke-width="1" stroke-dasharray="6 4"/>`);
+if(RC&&dN<Math.min(dF,700)){const dFF=Math.min(dF,700),wN=halfW(dN),wF=halfW(dFF);
  h+=`<polygon points="${X(-wN)},${Y(yL-dN)} ${X(wN)},${Y(yL-dN)} ${X(wF)},${Y(yL-dFF)} ${X(-wF)},${Y(yL-dFF)}" fill="var(--accent)" fill-opacity="0.10" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/>`}
 const cone=(x,y,dx,dy,a,c)=>{const L=300,ca=Math.cos(rad(a)),sa=Math.sin(rad(a));
  return [[dx*ca-dy*sa,dx*sa+dy*ca],[dx*ca+dy*sa,-dx*sa+dy*ca]].map(([vx,vy])=>`<line x1="${X(x)}" y1="${Y(y)}" x2="${X(x+vx*L)}" y2="${Y(y+vy*L)}" stroke="${c}" stroke-width="1" stroke-dasharray="2 3"/>`).join('')};
-h+=cone(0,ly,0,-1,L8.hf,'var(--tof-line)');
-if(st3.l4f)h+=cone(20,Fc-L4.t,0,-1,L4.hf,'var(--tof-line)');
-if(st3.l4l)h+=cone(-xe-L4.t,yS,-1,0,L4.hf,'var(--tof-line)');
-if(st3.l4r)h+=cone(xe+L4.t,yS,1,0,L4.hf,'var(--tof-line)');
-h+=`<g fill="var(--sensor)" stroke="var(--sensor-line)" stroke-width="0.8">${R(-qx,qy0,qx,qy1,'rx="1.5"')}${R(-CAM.w/2,cy0,CAM.w/2,cy1,'rx="2" fill-opacity="0.85"')}</g>`;
-h+=`<g fill="var(--sensor-line)">${[-28,-20,-12,-4,4,12,20,28].map(x=>`<circle cx="${X(x)}" cy="${Y(qyc)}" r="1.8"/>`).join('')}<circle cx="${X(0)}" cy="${Y(cy0)+4}" r="4"/></g>`;
-let tb=R(-L8.w/2,ly,L8.w/2,Fc);
-if(st3.l4f)tb+=R(20-L4.w/2,Fc-L4.t,20+L4.w/2,Fc);
-if(st3.l4l)tb+=R(-xe-L4.t,yS-L4.w/2,-xe,yS+L4.w/2);
-if(st3.l4r)tb+=R(xe,yS-L4.w/2,xe+L4.t,yS+L4.w/2);
+if(RT)h+=cone(0,ly,0,-1,L8.hf,'var(--tof-line)');
+if(f4)h+=cone(20,Fc-L4.t,0,-1,L4.hf,'var(--tof-line)');
+if(l4)h+=cone(-xe-L4.t,yS,-1,0,L4.hf,'var(--tof-line)');
+if(r4)h+=cone(xe+L4.t,yS,1,0,L4.hf,'var(--tof-line)');
+h+=`<g fill="var(--sensor)" stroke="var(--sensor-line)" stroke-width="0.8">${RQ?R(-qx,qy0,qx,qy1,'rx="1.5"'):''}${RC?R(-CAM.w/2,cy0,CAM.w/2,cy1,'rx="2" fill-opacity="0.85"'):''}</g>`;
+h+=`<g fill="var(--sensor-line)">${RQ?[-28,-20,-12,-4,4,12,20,28].map(x=>`<circle cx="${X(x)}" cy="${Y(qyc)}" r="1.8"/>`).join(''):''}${RC?`<circle cx="${X(0)}" cy="${Y(cy0)+4}" r="4"/>`:''}</g>`;
+let tb=RT?R(-L8.w/2,ly,L8.w/2,Fc):'';
+if(f4)tb+=R(20-L4.w/2,Fc-L4.t,20+L4.w/2,Fc);
+if(l4)tb+=R(-xe-L4.t,yS-L4.w/2,-xe,yS+L4.w/2);
+if(r4)tb+=R(xe,yS-L4.w/2,xe+L4.t,yS+L4.w/2);
 h+=`<g fill="var(--tof)" stroke="var(--tof-line)" stroke-width="0.8">${tb}</g>`;
 let lyy=-250;const lx=500;
-[['var(--sensor)','var(--sensor-line)','QTRX line sensor'],['var(--sensor)','var(--sensor-line)','OpenMV RT1062 footprint'],['var(--tof)','var(--tof-line)','VL53L8CX / VL53L4CD']].forEach(([f,s,tx])=>{h+=`<rect x="${lx}" y="${lyy-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">${tx}</text>`;lyy+=26});
-h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Camera floor view</text>`;lyy+=26;
-h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--tof-line)" stroke-width="1" stroke-dasharray="2 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Distance sensor view</text>`;lyy+=26;
+[RQ&&['var(--sensor)','var(--sensor-line)','QTRX line sensor'],RC&&['var(--sensor)','var(--sensor-line)','OpenMV RT1062 footprint'],RT&&['var(--tof)','var(--tof-line)','VL53L8CX / VL53L4CD']].filter(Boolean).forEach(([f,s,tx])=>{h+=`<rect x="${lx}" y="${lyy-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">${tx}</text>`;lyy+=26});
+if(RC)h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Camera floor view</text>`,lyy+=26;
+if(RT)h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--tof-line)" stroke-width="1" stroke-dasharray="2 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Distance sensor view</text>`,lyy+=26;
 /* center of balance: parts drawn so far */
 const cgSym=(x,y)=>`<g><circle cx="${x}" cy="${y}" r="8" fill="var(--panel)" stroke="var(--fg)" stroke-width="1.5"/><path d="M${x} ${y} L${x+8} ${y} A8 8 0 0 1 ${x} ${y+8} Z M${x} ${y} L${x-8} ${y} A8 8 0 0 1 ${x} ${y-8} Z" fill="var(--fg)"/></g>`;
 const pts3=[],add=(m,x,y,z)=>pts3.push([m,x,y,z]),p3m=st.mount==='print',wwd=WW[st.wheel];
 const wheelM=14.2*(g.D/70)**2*(wwd/8);
-g.motors.forEach(({s,y})=>{add(101,s*(g.wf-33.5),y,g.hR);add(p3m?10:8.5,s*(g.wf-26),y,g.hR)});
-g.wheels.forEach(q=>add(wheelM+3.2,q.s*(g.wi+g.wo)/2,q.yc,g.hR));
+if(G.rd)g.motors.forEach(({s,y})=>{add(101,s*(g.wf-33.5),y,g.hR);add(p3m?10:8.5,s*(g.wf-26),y,g.hR)});
+if(G.rd)g.wheels.forEach(q=>add(wheelM+3.2,q.s*(g.wi+g.wo)/2,q.yc,g.hR));
 const CM={c38:0.85,c12:2.0,c34:29.8};
-g.casters.forEach(([x,y])=>add(CM[st.caster],x,y,g.dBot-G.Hc/2));
-{const A0=g.shape==='round'?Math.PI*g.hw*g.hw:2*g.hw*g.L;let A=A0,My=0;
+if(G.rd)g.casters.forEach(([x,y])=>add(CM[st.caster],x,y,g.dBot-G.Hc/2));
+if(G.rb){const A0=g.shape==='round'?Math.PI*g.hw*g.hw:2*g.hw*g.L;let A=A0,My=0;
  if(g.shape==='u'){const an=2*g.nw*g.nd;A-=an;My-=an*(-g.L/2+g.nd/2)}
  if(st.place!=='outside'){const cx2=st.place==='wells'?g.hw+6:g.wo+3,cw=Math.max(0,Math.min(cx2,g.hw)-(g.wi-3));g.wheels.forEach(q=>{const ca=cw*(q.y1-q.y0+8);A-=ca;My-=ca*q.yc})}
  const DENS={acrylic:1.19,ply:0.6,pla:0.75,al:2.7};
  add(A*st.deck*DENS[st.mat]/1000,0,My/A,(g.dBot+g.dTop)/2)}
-add(3.1,0,qyc,qz0+QTR.t/2);
-add(20,0,cor.reduce((a,c)=>a+c[0],0)/4,cor.reduce((a,c)=>a+c[1],0)/4);
-add(0.7,0,ly+L8.t/2,lz);
-if(st3.l4f)add(0.5,20,Fc-L4.t/2,l4z);if(st3.l4l)add(0.5,-xe-L4.t/2,yS,l4z);if(st3.l4r)add(0.5,xe+L4.t/2,yS,l4z);
+if(RQ)add(3.1,0,qyc,qz0+QTR.t/2);
+if(RC)add(20,0,cor.reduce((a,c)=>a+c[0],0)/4,cor.reduce((a,c)=>a+c[1],0)/4);
+if(RT)add(0.7,0,ly+L8.t/2,lz);
+if(f4)add(0.5,20,Fc-L4.t/2,l4z);if(l4)add(0.5,-xe-L4.t/2,yS,l4z);if(r4)add(0.5,xe+L4.t/2,yS,l4z);
 const Mt=pts3.reduce((a,p)=>a+p[0],0),cg=[1,2,3].map(i=>pts3.reduce((a,p)=>a+p[0]*p[i],0)/Mt);
-h+=cgSym(X(cg[0]),Y(cg[1]));
+if(Mt>0)h+=cgSym(X(cg[0]),Y(cg[1]));
 const dAx=cg[1]-g.cy,axN=st.drive==='2wd'?'drive axle':'wheelbase center';
 const sym='<svg viewBox="-9 -9 18 18" aria-hidden="true">'+cgSym(0,0)+'</svg>';
-document.getElementById('cgline').innerHTML=`<span>${sym} Center of balance</span><span><b>${Math.round(Math.abs(dAx))} mm</b> ${dAx<=0?'ahead of':'behind'} the ${axN}</span><span><b>${Math.round(cg[2])} mm</b> above the floor</span><span><b>${Math.round(Math.abs(cg[0]))} mm</b> ${Math.abs(cg[0])<0.5?'off center':cg[0]>0?'right of center':'left of center'}</span><span><b>${Math.round(Mt)} g</b> of parts so far (no battery or electronics yet)</span>`;
-G.cgSide=cgSym(X2(cg[1]),Z2(cg[2]));
+document.getElementById('cgline').innerHTML=Mt===0?'':`<span>${sym} Center of balance</span><span><b>${Math.round(Math.abs(dAx))} mm</b> ${dAx<=0?'ahead of':'behind'} the ${axN}</span><span><b>${Math.round(cg[2])} mm</b> above the floor</span><span><b>${Math.round(Math.abs(cg[0]))} mm</b> ${Math.abs(cg[0])<0.5?'off center':cg[0]>0?'right of center':'left of center'}</span><span><b>${Math.round(Mt)} g</b> of parts so far (no battery or electronics yet)</span>`;
+G.cgSide=Mt>0?cgSym(X2(cg[1]),Z2(cg[2])):'';
 h+=g.leg1;
+if(!(G.rb||G.rd||RQ||RC||RT))h+=`<text x="340" y="200" text-anchor="middle" style="font-size:15px;fill:var(--fg)">Start in step 1.</text><text x="340" y="224" text-anchor="middle">Pick a sample, or choose a shape and a drive.</text>`;
 top.innerHTML=h;
 /* side view */
 let sv=g.gBase;
-sv+=`<line x1="20" y1="${Z2(225)}" x2="660" y2="${Z2(225)}" stroke="var(--limit)" stroke-width="1" stroke-dasharray="4 3"/><text x="660" y="${Z2(225)+15}" text-anchor="end">225 mm height target</text>`;
+if(G.rb||G.rd||RQ||RC||RT)sv+=`<line x1="20" y1="${Z2(225)}" x2="660" y2="${Z2(225)}" stroke="var(--limit)" stroke-width="1" stroke-dasharray="4 3"/><text x="660" y="${Z2(225)+15}" text-anchor="end">225 mm height target</text>`;
 const ray=(y,z,ang,c,dash)=>{const a=rad(ang);let ex,ez;if(Math.sin(a)>0.001){const d=z/Math.tan(a);ex=y-d;ez=0}else{ex=y-500*Math.cos(a);ez=z-500*Math.sin(a)}
  return `<line x1="${X2(y)}" y1="${Z2(z)}" x2="${X2(ex)}" y2="${Z2(ez)}" stroke="${c}" stroke-width="1" stroke-dasharray="${dash}"/>`};
-sv+=ray(yL,zL,p1,'var(--accent)','4 3')+ray(yL,zL,p2,'var(--accent)','4 3');
-sv+=ray(ly,lz,L8.hf,'var(--tof-line)','2 3')+ray(ly,lz,-L8.hf,'var(--tof-line)','2 3');
-if(st3.l4f)sv+=ray(Fc-L4.t,l4z,L4.hf,'var(--tof-line)','2 3')+ray(Fc-L4.t,l4z,-L4.hf,'var(--tof-line)','2 3');
-if(qUnder&&qz1<g.dBot)sv+=`<g stroke="var(--body-line)" stroke-width="1" stroke-dasharray="2 2">${[qy0+3,qy1-3].map(y=>`<line x1="${X2(y)}" y1="${Z2(qz1)}" x2="${X2(y)}" y2="${Z2(g.dBot)}"/>`).join('')}</g>`;
-sv+=`<g fill="var(--sensor)" stroke="var(--sensor-line)" stroke-width="0.8">${RR(qy0,qz0,qy1,qz1)}<polygon points="${pts(cor)}"/></g>`;
-sv+=`<circle cx="${X2(yL)}" cy="${Z2(zL)}" r="5" fill="var(--sensor-line)"/>`;
-let ts=RR(ly,lz-L8.h/2,Fc,lz+L8.h/2);
-if(st3.l4f)ts+=RR(Fc-L4.t,l4z-L4.h/2,Fc,l4z+L4.h/2);
-if(st3.l4r)ts+=RR(yS-L4.w/2,l4z-L4.h/2,yS+L4.w/2,l4z+L4.h/2);
+if(RC)sv+=ray(yL,zL,p1,'var(--accent)','4 3')+ray(yL,zL,p2,'var(--accent)','4 3');
+if(RT)sv+=ray(ly,lz,L8.hf,'var(--tof-line)','2 3')+ray(ly,lz,-L8.hf,'var(--tof-line)','2 3');
+if(f4)sv+=ray(Fc-L4.t,l4z,L4.hf,'var(--tof-line)','2 3')+ray(Fc-L4.t,l4z,-L4.hf,'var(--tof-line)','2 3');
+if(RQ&&G.rb&&qUnder&&qz1<g.dBot)sv+=`<g stroke="var(--body-line)" stroke-width="1" stroke-dasharray="2 2">${[qy0+3,qy1-3].map(y=>`<line x1="${X2(y)}" y1="${Z2(qz1)}" x2="${X2(y)}" y2="${Z2(g.dBot)}"/>`).join('')}</g>`;
+sv+=`<g fill="var(--sensor)" stroke="var(--sensor-line)" stroke-width="0.8">${RQ?RR(qy0,qz0,qy1,qz1):''}${RC?`<polygon points="${pts(cor)}"/>`:''}</g>`;
+if(RC)sv+=`<circle cx="${X2(yL)}" cy="${Z2(zL)}" r="5" fill="var(--sensor-line)"/>`;
+let ts=RT?RR(ly,lz-L8.h/2,Fc,lz+L8.h/2):'';
+if(f4)ts+=RR(Fc-L4.t,l4z-L4.h/2,Fc,l4z+L4.h/2);
+if(r4)ts+=RR(yS-L4.w/2,l4z-L4.h/2,yS+L4.w/2,l4z+L4.h/2);
 sv+=`<g fill="var(--tof)" stroke="var(--tof-line)" stroke-width="0.8">${ts}</g>`+G.cgSide;
 side.innerHTML=sv;
 /* status + readouts */
 let sh=bad.map(b=>`<strong class="bad">${b}</strong>`).join('<br>');
 if(watch.length)sh+=(sh?'<br>':'')+watch.map(w=>'<strong>Check:</strong> '+w).join('<br>');
-if(!sh)sh='<strong class="ok">No conflicts found.</strong> The front sensors fit with this drive base.';
+if(!sh)sh=RQ||RC||RT?'<strong class="ok">No conflicts found.</strong> The sensors placed so far fit with this drive base.':'<span class="summary">Move a slider or button in a section to place that sensor.</span>';
 if(G.levelHtml)sh=G.levelHtml+'<br>'+sh;
 stat.innerHTML=sh;
 const ok=c=>c?'var(--ok)':'var(--bad)';
-out.innerHTML=tile('QTR height ≈',r1(qz0)+' mm',ok(qz0<=40))+tile('QTR ahead of turn center ≈',Math.round(qAhead)+' mm')
- +tile('Camera floor view ≈',`${Math.round(aN)} to ${dF===Infinity?'horizon':Math.round(aF)+' mm'}`)+tile('Camera top ≈',Math.round(cz1)+' mm',ok(cz1<=225))
- +tile('VL53L8CX sees floor ≈',Math.round(l8floor)+' mm')+(any4?tile('VL53L4CD sees floor ≈',Math.round(l4floor)+' mm'):'')
+out.innerHTML=!(RQ||RC||RT)?'':(RQ?tile('QTR height ≈',r1(qz0)+' mm',ok(qz0<=40))+tile('QTR ahead of turn center ≈',Math.round(qAhead)+' mm'):'')
+ +(RC?tile('Camera floor view ≈',`${Math.round(aN)} to ${dF===Infinity?'horizon':Math.round(aF)+' mm'}`)+tile('Camera top ≈',Math.round(cz1)+' mm',ok(cz1<=225)):'')
+ +(RT?tile('VL53L8CX sees floor ≈',Math.round(l8floor)+' mm'):'')+(any4?tile('VL53L4CD sees floor ≈',Math.round(l4floor)+' mm'):'')
  +tile('Overall width ≈',Wd+' mm',ok(Wd<=225))+tile('Overall length ≈',Math.round(len)+' mm')+tile('Height ≈',Math.round(Ht)+' mm',ok(Ht<=225))+tile('Spin circle ≈',Math.round(2*SR3)+' mm',ok(2*SR3<=300));
 persist();
 }
 /* ---------- save, export, import ---------- */
-const SAVE_KEY='lrq-sample-drive-bases',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3));
+const SAVE_KEY='lrq-sample-drive-bases-v2',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3));
 const RANGE={wb:[80,160],adj:[-9,20],deck:[1,12]};
 let ready=false;
-function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.5.1',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,st:{...st},st3:{...st3}}}
+function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.6',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3}}}
 function persist(){if(!ready)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()))}catch(e){}}
 function applySave(o){
  if(!o||typeof o!=='object'||!o.st||!o.st3)throw new Error('not a save');
  Object.assign(st,DEF);Object.assign(st3,DEF3);
+ for(const k in rev)rev[k]=o.rev&&typeof o.rev==='object'?o.rev[k]===true:true;
  for(const k in DEF)if(k in o.st&&typeof o.st[k]===typeof DEF[k])st[k]=o.st[k];
  for(const k in opts)if(!opts[k].some(([v])=>String(v)===String(st[k])))st[k]=DEF[k];
  for(const k in RANGE){const [a,b]=RANGE[k];if(!(st[k]>=a&&st[k]<=b))st[k]=DEF[k]}
@@ -641,7 +650,7 @@ document.getElementById('bload').addEventListener('click',()=>{try{applySave(dec
 document.getElementById('bclose').addEventListener('click',()=>{box.hidden=true;say('')});
 document.getElementById('breset').addEventListener('click',()=>{document.getElementById('resetq').hidden=false});
 document.getElementById('bno').addEventListener('click',()=>{document.getElementById('resetq').hidden=true});
-document.getElementById('byes').addEventListener('click',()=>{document.getElementById('resetq').hidden=true;applySave({st:DEF,st3:DEF3,name:'',step:1,view:'top'});say('Started over with the sample robot.')});
+document.getElementById('byes').addEventListener('click',()=>{document.getElementById('resetq').hidden=true;applySave({st:DEF,st3:DEF3,name:'',step:1,view:'top',rev:{}});say('Started over with a blank page.')});
 let saved=null;try{saved=JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(e){}
 ready=true;
 if(saved){try{applySave(saved)}catch(e){draw()}}else draw();
