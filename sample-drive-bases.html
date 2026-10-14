@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.5</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.5.1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -53,6 +53,9 @@ header p{margin:0;color:var(--muted);max-width:65ch}
 .viewbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .seg{display:inline-flex}
 .viewbar .hint{font-size:13px;color:var(--muted)}
+.cgline{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;font-size:13px;color:var(--muted)}
+.cgline b{font:500 13px var(--mono);color:var(--fg);font-variant-numeric:tabular-nums}
+.cgline svg{width:16px;height:16px;min-width:0;display:inline-block;vertical-align:-3px}
 .seg button{border-radius:0}
 .seg button:first-child{border-radius:6px 0 0 6px}
 .seg button:last-child{border-radius:0 6px 6px 0;margin-left:-1px}
@@ -103,7 +106,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.5</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.5.1</div>
   <h1>Sample drive bases</h1>
   <p>Work through the steps on the right; the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
 </header>
@@ -112,6 +115,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 <div class="viewcol">
   <div class="viewbar"><span class="seg" role="group" aria-label="Drawing view"><button id="vt" class="on" onclick="setView('top')">Top view</button><button id="vs" onclick="setView('side')">Side view</button></span><span class="hint" id="viewhint">Front is up.</span></div>
   <div class="stage"><svg id="top3" viewBox="0 -280 680 770" role="img" aria-label="Top view of the robot, front at top"></svg><svg id="side3" hidden viewBox="0 -200 680 490" role="img" aria-label="Side view of the robot, front at left"></svg></div>
+  <div class="cgline" id="cgline" role="status"></div>
 </div>
 <div class="panel">
 <div class="steps">
@@ -156,6 +160,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
   <div class="row" id="nocaster" hidden><span class="hint">No casters on this layout. The wheels set the deck height.</span></div>
   <div class="sub">2 · Deck</div>
   <div class="row" id="g-deck"><span class="l">Deck thickness</span></div>
+  <div class="row" id="g-mat"><span class="l">Deck material</span></div>
   <div class="sub">3 · Motor mount</div>
   <div class="row" id="g-mount"><span class="l">Motor mount</span></div>
   <div class="row" id="g-pos"><span class="l">Mount position</span></div>
@@ -221,6 +226,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
     <li>VL53L8CX carrier, Pololu #3419: 13 × 23 × 3 mm, 45° horizontal and vertical field of view, 20 mm to 4 m (Pololu product page). Drawn centered on the front edge, facing forward, 23 mm side across.</li>
     <li>VL53L4CD: 18° field of view (ST). The board is not chosen yet; it is drawn at the size of Pololu carrier #3692 (12.7 × 17.8 × 2.2 mm) as an example. Side spots are drawn 30 mm behind the front edge.</li>
     <li>Step 3 checks are footprint checks from above plus the heights shown. Wires, headers, and sensor mounts are not drawn.</li>
+    <li>Center of balance (⊕) is the weighted average of the parts drawn so far: motor #4805 101 g (Pololu), 70 × 8 mm wheel 14.2 g with tire (Pololu, 0.5 oz), hub #1081 3.2 g, bracket #2676 8.5 g, casters #955 29.8 g, #952 2.0 g, #950 0.85 g (Pololu, 1.05/0.07/0.03 oz), QTRX-MD-08A 3.1 g, OpenMV RT1062 20 g, VL53L8CX carrier 0.7 g, VL53L4CD carrier 0.5 g. Estimates: other wheel sizes scaled from the 70 × 8 mm wheel by diameter squared and width; printed cradle 10 g; deck densities acrylic 1.19, plywood 0.6, 3D-printed 0.75, aluminum 2.7 g/cm³ (typical values; a print depends on its infill). Each part counts at its own center. The battery, Teensy, motor drivers, and regulators are not placed yet, so the point will move when steps 4 and 5 add them.</li>
     <li>Saving: work saves in this browser only. A downloaded file or a copied save code holds every setting and the robot name; open or paste it to pick up where you left off.</li>
     <li>Speed bumps are up to 1 cm high (rule 3.5.1). The 225 mm limit is the class size target (25 cm tunnel minus 10%). Length has no limit.</li>
   </ul>
@@ -242,10 +248,11 @@ axle:[['front','Front'],['center','Center'],['rear','Rear']],
 caster:[['c38','⅜″ · 10.1 mm'],['c12','½″ · 13.5 mm'],['c34','¾″ · 20.9 mm']],
 spacer:[['none','None'],['s16','1/16″'],['s8','1/8″'],['both','Both']],
 deck:[[3,'3 mm'],[4.5,'4.5 mm'],[6,'6 mm']],
+mat:[['acrylic','Acrylic'],['ply','Plywood'],['pla','3D-printed'],['al','Aluminum']],
 mount:[['pololu','Pololu bracket #2676'],['print','3D-printed cradle']],
 pos:[['above','Above deck'],['below','Below deck'],['between','In between']]};
 const st={drive:'2wd',shape:'square',place:'outside',wheel:'thin',dia:70,arr:'b2b',axle:'center',wb:100,spin:false,
-caster:'c34',spacer:'none',deck:3,mount:'pololu',pos:'above',adj:0};
+caster:'c34',spacer:'none',deck:3,mat:'acrylic',mount:'pololu',pos:'above',adj:0};
 const WW={thin:8,medium:15,wide:25,track:20};
 for(const k in opts){const g=document.getElementById('g-'+k);opts[k].forEach(([v,t])=>{const b=document.createElement('button');b.textContent=t;b.dataset.k=k;b.dataset.v=String(v);
  b.onclick=()=>{st[k]=v;if(k==='deck')document.getElementById('deckc').value=v;if(k==='pos'||k==='mount')st.adj=0;draw()};g.appendChild(b)})}
@@ -459,7 +466,7 @@ G.levelHtml=hasCaster&&Math.abs(gap)>=0.5?sHtml:'';
 const okA=a=>a>=25?'var(--ok)':'var(--bad)';
 out2.innerHTML=tile('Lowest point ≈',r1(low)+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck underside ≈',r1(dBot)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm')
  +tile('Approach ≈',appr>=89?'no overhang':Math.round(appr)+'°',okA(appr))+tile('Departure ≈',dep>=89?'no overhang':Math.round(dep)+'°',okA(dep))+tile('Break-over ≈',brk>=179?'n/a':Math.round(brk)+'°',okA(brk));
-Object.assign(G,{bad:null,leg1,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
+Object.assign(G,{bad:null,leg1,nw,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
 draw3();
 }
 /* ---------- step 3: front sensors ---------- */
@@ -473,7 +480,7 @@ const $=id=>document.getElementById(id);
 ['l4f','l4l','l4r'].forEach(k=>$(k).classList.toggle('on',st3[k]));
 $('summary3').textContent=$('summary').textContent;
 const top=$('top3'),side=$('side3'),out=$('out3'),stat=$('status3');
-if(!G||G.bad){const m=`<text x="340" y="100" text-anchor="middle">${G&&G.bad?G.bad:''}</text>`;top.innerHTML=G&&G.topOnly?G.topOnly:m;side.innerHTML=m;out.innerHTML='';stat.innerHTML=G&&G.bad?G.bad:'';persist();return}
+if(!G||G.bad){const m=`<text x="340" y="100" text-anchor="middle">${G&&G.bad?G.bad:''}</text>`;top.innerHTML=G&&G.topOnly?G.topOnly:m;side.innerHTML=m;document.getElementById('cgline').textContent='Center of balance needs the side view, so it is not shown for this layout.';out.innerHTML='';stat.innerHTML=G&&G.bad?G.bad:'';persist();return}
 const g=G,F=-g.L/2,Fc=F+(g.shape==='u'?g.nd:0),bad=[],watch=[];
 const X2=m=>340+m*2,Z2=z=>262-z*2;
 const RR=(x1,z1,x2,z2,a)=>`<rect x="${X2(Math.min(x1,x2))}" y="${Z2(Math.max(z1,z2))}" width="${Math.abs(x2-x1)*2}" height="${Math.abs(z2-z1)*2}" ${a||''}/>`;
@@ -544,6 +551,29 @@ let lyy=-250;const lx=500;
 [['var(--sensor)','var(--sensor-line)','QTRX line sensor'],['var(--sensor)','var(--sensor-line)','OpenMV RT1062 footprint'],['var(--tof)','var(--tof-line)','VL53L8CX / VL53L4CD']].forEach(([f,s,tx])=>{h+=`<rect x="${lx}" y="${lyy-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s}" stroke-width="0.6"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">${tx}</text>`;lyy+=26});
 h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--accent)" stroke-width="1" stroke-dasharray="4 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Camera floor view</text>`;lyy+=26;
 h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--tof-line)" stroke-width="1" stroke-dasharray="2 3"/><text x="${lx+24}" y="${lyy}" dominant-baseline="central">Distance sensor view</text>`;lyy+=26;
+/* center of balance: parts drawn so far */
+const cgSym=(x,y)=>`<g><circle cx="${x}" cy="${y}" r="8" fill="var(--panel)" stroke="var(--fg)" stroke-width="1.5"/><path d="M${x} ${y} L${x+8} ${y} A8 8 0 0 1 ${x} ${y+8} Z M${x} ${y} L${x-8} ${y} A8 8 0 0 1 ${x} ${y-8} Z" fill="var(--fg)"/></g>`;
+const pts3=[],add=(m,x,y,z)=>pts3.push([m,x,y,z]),p3m=st.mount==='print',wwd=WW[st.wheel];
+const wheelM=14.2*(g.D/70)**2*(wwd/8);
+g.motors.forEach(({s,y})=>{add(101,s*(g.wf-33.5),y,g.hR);add(p3m?10:8.5,s*(g.wf-26),y,g.hR)});
+g.wheels.forEach(q=>add(wheelM+3.2,q.s*(g.wi+g.wo)/2,q.yc,g.hR));
+const CM={c38:0.85,c12:2.0,c34:29.8};
+g.casters.forEach(([x,y])=>add(CM[st.caster],x,y,g.dBot-G.Hc/2));
+{const A0=g.shape==='round'?Math.PI*g.hw*g.hw:2*g.hw*g.L;let A=A0,My=0;
+ if(g.shape==='u'){const an=2*g.nw*g.nd;A-=an;My-=an*(-g.L/2+g.nd/2)}
+ if(st.place!=='outside'){const cx2=st.place==='wells'?g.hw+6:g.wo+3,cw=Math.max(0,Math.min(cx2,g.hw)-(g.wi-3));g.wheels.forEach(q=>{const ca=cw*(q.y1-q.y0+8);A-=ca;My-=ca*q.yc})}
+ const DENS={acrylic:1.19,ply:0.6,pla:0.75,al:2.7};
+ add(A*st.deck*DENS[st.mat]/1000,0,My/A,(g.dBot+g.dTop)/2)}
+add(3.1,0,qyc,qz0+QTR.t/2);
+add(20,0,cor.reduce((a,c)=>a+c[0],0)/4,cor.reduce((a,c)=>a+c[1],0)/4);
+add(0.7,0,ly+L8.t/2,lz);
+if(st3.l4f)add(0.5,20,Fc-L4.t/2,l4z);if(st3.l4l)add(0.5,-xe-L4.t/2,yS,l4z);if(st3.l4r)add(0.5,xe+L4.t/2,yS,l4z);
+const Mt=pts3.reduce((a,p)=>a+p[0],0),cg=[1,2,3].map(i=>pts3.reduce((a,p)=>a+p[0]*p[i],0)/Mt);
+h+=cgSym(X(cg[0]),Y(cg[1]));
+const dAx=cg[1]-g.cy,axN=st.drive==='2wd'?'drive axle':'wheelbase center';
+const sym='<svg viewBox="-9 -9 18 18" aria-hidden="true">'+cgSym(0,0)+'</svg>';
+document.getElementById('cgline').innerHTML=`<span>${sym} Center of balance</span><span><b>${Math.round(Math.abs(dAx))} mm</b> ${dAx<=0?'ahead of':'behind'} the ${axN}</span><span><b>${Math.round(cg[2])} mm</b> above the floor</span><span><b>${Math.round(Math.abs(cg[0]))} mm</b> ${Math.abs(cg[0])<0.5?'off center':cg[0]>0?'right of center':'left of center'}</span><span><b>${Math.round(Mt)} g</b> of parts so far (no battery or electronics yet)</span>`;
+G.cgSide=cgSym(X2(cg[1]),Z2(cg[2]));
 h+=g.leg1;
 top.innerHTML=h;
 /* side view */
@@ -560,7 +590,7 @@ sv+=`<circle cx="${X2(yL)}" cy="${Z2(zL)}" r="5" fill="var(--sensor-line)"/>`;
 let ts=RR(ly,lz-L8.h/2,Fc,lz+L8.h/2);
 if(st3.l4f)ts+=RR(Fc-L4.t,l4z-L4.h/2,Fc,l4z+L4.h/2);
 if(st3.l4r)ts+=RR(yS-L4.w/2,l4z-L4.h/2,yS+L4.w/2,l4z+L4.h/2);
-sv+=`<g fill="var(--tof)" stroke="var(--tof-line)" stroke-width="0.8">${ts}</g>`;
+sv+=`<g fill="var(--tof)" stroke="var(--tof-line)" stroke-width="0.8">${ts}</g>`+G.cgSide;
 side.innerHTML=sv;
 /* status + readouts */
 let sh=bad.map(b=>`<strong class="bad">${b}</strong>`).join('<br>');
@@ -579,7 +609,7 @@ persist();
 const SAVE_KEY='lrq-sample-drive-bases',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3));
 const RANGE={wb:[80,160],adj:[-9,20],deck:[1,12]};
 let ready=false;
-function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.5',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,st:{...st},st3:{...st3}}}
+function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.5.1',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,st:{...st},st3:{...st3}}}
 function persist(){if(!ready)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()))}catch(e){}}
 function applySave(o){
  if(!o||typeof o!=='object'||!o.st||!o.st3)throw new Error('not a save');
