@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<!-- RoboLore Bot Builder v1.1 — coach runs on the zumosupport server -->
+<!-- RoboLore Bot Builder v1.1.1 — coach runs on the zumosupport server -->
 <title>RoboLore Bot Builder</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -39,6 +39,7 @@ button{font:inherit;color:inherit}
 .bar i{display:block;height:100%;background:var(--brass);width:0}
 .btn{border:1px solid var(--rule);background:var(--panel);padding:8px 12px;border-radius:3px;cursor:pointer;font-weight:500}
 .btn:hover{border-color:var(--accent)}
+a.btn{text-decoration:none;display:inline-block;font-size:inherit}
 .btn.primary{background:var(--accent);border-color:var(--accent);color:#FBF9F3}
 .band .btn{background:transparent;color:var(--band-fg);border-color:#3D5266}
 .btn:focus-visible,.stage-link:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
@@ -109,6 +110,7 @@ textarea{width:100%;min-height:84px;resize:vertical;font:15px/1.5 var(--sans);pa
     <div class="prog">
       <span id="progTxt">0 of 12 stages done</span>
       <span class="bar"><i id="progBar"></i></span>
+      <a class="btn" href="sample-drive-bases.html">Drive base builder</a>
       <button class="btn" id="exportBtn" type="button">Save my notebook</button>
     </div>
   </div>
