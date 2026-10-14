@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.4.1</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.4.2</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -73,6 +73,8 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 .warn strong{color:var(--bad)}
 .status{border-radius:8px;padding:12px 14px;border:1px solid var(--line);background:var(--panel)}
 .status strong.ok{color:var(--ok)} .status strong.bad{color:var(--bad)}
+.fixes{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 .nav{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .summary{font-size:13px;color:var(--muted)}
 .notes{font-size:14px;color:var(--muted)}
@@ -84,15 +86,15 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.4.1</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.4.2</div>
   <h1>Sample drive bases</h1>
-  <p>Step 1: lay out the robot from above. Step 2: set casters, deck, and motor mount from the side. Step 3a: add the front sensors. Every view is drawn to scale with Pololu 25D gearmotors.</p>
+  <p>Step 1: lay out the robot from above. Step 2: set casters, deck, and motor mount from the side. Step 3: add the front sensors. Every view is drawn to scale with Pololu 25D gearmotors.</p>
 </header>
 
 <div class="steps">
   <button id="tab1" class="on" onclick="go(1)">Step 1 · Top view</button>
   <button id="tab2" onclick="go(2)">Step 2 · Side view</button>
-  <button id="tab3" onclick="go(3)">Step 3a · Front sensors</button>
+  <button id="tab3" onclick="go(3)">Step 3 · Front sensors</button>
 </div>
 
 <section id="step1">
@@ -185,7 +187,7 @@ svg text{font-family:var(--sans);fill:var(--muted);font-size:12px}
     <li>OpenMV Cam RT1062: 45 × 36 × 29 mm, 20 g; with its OV5640 sensor the field of view is 65.9° horizontal and 51.8° vertical (OpenMV product page). The drawing assumes the 45 mm side stands upright and the 29 mm side is the lens depth. Floor view is a pinhole-camera estimate.</li>
     <li>VL53L8CX carrier, Pololu #3419: 13 × 23 × 3 mm, 45° horizontal and vertical field of view, 20 mm to 4 m (Pololu product page). Drawn centered on the front edge, facing forward, 23 mm side across.</li>
     <li>VL53L4CD: 18° field of view (ST). The board is not chosen yet; it is drawn at the size of Pololu carrier #3692 (12.7 × 17.8 × 2.2 mm) as an example. Side spots are drawn 30 mm behind the front edge.</li>
-    <li>Step 3a checks are footprint checks from above plus the heights shown. Wires, headers, and sensor mounts are not drawn.</li>
+    <li>Step 3 checks are footprint checks from above plus the heights shown. Wires, headers, and sensor mounts are not drawn.</li>
     <li>Speed bumps are up to 1 cm high (rule 3.5.1). The 225 mm limit is the class size target (25 cm tunnel minus 10%). Length has no limit.</li>
   </ul>
 </div>
@@ -225,7 +227,8 @@ function go(n){[1,2,3].forEach(i=>{document.getElementById('step'+i).hidden=n!==
 function R(x1,y1,x2,y2,a){return `<rect x="${X(Math.min(x1,x2))}" y="${Y(Math.min(y1,y2))}" width="${Math.abs(x2-x1)*S}" height="${Math.abs(y2-y1)*S}" ${a||''}/>`}
 const tile=(k,v,c)=>`<div class="tile"><div class="k">${k}</div><div class="v"${c?` style="color:${c}"`:''}>${v}</div></div>`;
 const r1=x=>Math.round(x*10)/10;
-let G={};
+let G={},FIX={};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-fix]');if(!b||!FIX[b.dataset.fix])return;const f=FIX[b.dataset.fix];if(f.caster){st.caster=f.caster;st.spacer=f.spacer}st.adj=f.adj;draw()});
 const base=()=>st.mount==='print'?15.5:14.5;
 function mountOffset(){const T=st.deck,a=st.adj;
  if(st.pos==='above')return T+base()+a;
@@ -350,7 +353,7 @@ const W=Math.round(2*Math.max(hw,wo)),ok=W<=225,SD=Math.round(2*SR);
 out.innerHTML=tile('Overall width ≈',W+' mm',ok?'var(--ok)':'var(--bad)')+tile('Body length ≈',Math.round(L)+' mm')+tile('Spin circle ≈',SD+' mm',SD<=300?'var(--ok)':'var(--bad)')+(stag&&!trk?tile('Wheel offset ≈',Math.round(2*OF)+' mm'):'');
 G={hR,Hc,hasCaster};
 /* ---------- side view ---------- */
-if(trk){sv.innerHTML=`<text x="340" y="150" text-anchor="middle">Side view needs real track dimensions, so it is not drawn for tracks.</text>`;out2.innerHTML='';stat.innerHTML='';G.bad='Step 3a needs the side view, which is not drawn for tracks. Choose wheels in step 1.';draw3();return}
+if(trk){sv.innerHTML=`<text x="340" y="150" text-anchor="middle">Side view needs real track dimensions, so it is not drawn for tracks.</text>`;out2.innerHTML='';stat.innerHTML='';G.bad='Step 3 needs the side view, which is not drawn for tracks. Choose wheels in step 1.';draw3();return}
 const T=st.deck,o=mountOffset();
 const dBot=hR-o,dTop=dBot+T;
 let mBot,mTop;
@@ -396,19 +399,31 @@ if(hasCaster){const need=adjForOffset(hR-Hc),ab=Math.abs(gap),lvl=ab<0.5;
  if(lvl)sHtml=`<strong class="ok">Level.</strong> The deck underside at the drive axle (${r1(dBot)} mm) matches the caster height (${r1(Hc)} mm) within half a millimetre.`;
  else if(gap>0)sHtml=`<strong class="bad">Not level: the casters hang ${r1(ab)} mm above the floor.</strong> The robot tips toward the casters. `;
  else sHtml=`<strong class="bad">Not level: the casters reach ${r1(ab)} mm below the floor.</strong> The drive wheels lift off. `;
- if(!lvl){const lo=+adjEl.min,hi=+adjEl.max;
-  if(need>=lo-0.5&&need<=hi+0.5)sHtml+=`Set ${document.getElementById('adj-l').textContent.toLowerCase()} to about ${r1(need)} mm, or press Make level.`;
-  else sHtml+=`This mount position can't reach it. Try ${gap>0?'a taller caster or more spacers, a smaller wheel, or another mount position':'a shorter caster, a bigger wheel, or another mount position'}.`}}
+ if(!lvl){const lo=+adjEl.min,hi=+adjEl.max,al=document.getElementById('adj-l').textContent.toLowerCase();
+  const fit=n=>{const v=Math.round(n);return v>=lo&&v<=hi&&Math.abs(n-v)<0.5?v:null};
+  const v1=fit(need);FIX={};let fx='';
+  if(v1!==null){FIX.f1={adj:v1};fx+=`<button class="fix" data-fix="f1">Fix 1: ${al} ${v1} mm</button>`}
+  let best=null;
+  [['c38','none'],['c12','none'],['c34','none'],['c34','s16'],['c34','s8'],['c34','both']].forEach(([c,sp])=>{
+   if(c===st.caster&&(c!=='c34'||sp===st.spacer))return;
+   const v=fit(adjForOffset(hR-CASTERS[c].h-SPACER[sp]));
+   if(v!==null&&(!best||Math.abs(v)<Math.abs(best.adj)))best={caster:c,spacer:sp,adj:v}});
+  if(best){FIX[v1!==null?'f2':'f1']=best;const n=v1!==null?2:1;
+   const sl={none:'',s16:' + 1/16″ spacer',s8:' + 1/8″ spacer',both:' + both spacers'}[best.spacer];
+   fx+=`<button class="fix" data-fix="f${n}">Fix ${n}: ${CASTERS[best.caster].n} caster${sl}${best.adj?`, ${al} ${best.adj} mm`:''}</button>`}
+  if(fx)sHtml+=`<span class="fixes">${fx}</span>`;
+  else sHtml+=`No caster or ${al} in range makes this level. Try ${gap>0?'a smaller wheel':'a bigger wheel'} or another mount position.`}}
 else sHtml=`<strong class="ok">No casters.</strong> All wheels touch the floor, so the deck is level by design.`;
 if(msg)sHtml+=` <strong class="bad">${msg}</strong>`;
 stat.innerHTML=sHtml;
+G.levelHtml=hasCaster&&Math.abs(gap)>=0.5?sHtml:'';
 const okA=a=>a>=25?'var(--ok)':'var(--bad)';
 out2.innerHTML=tile('Lowest point ≈',r1(low)+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck underside ≈',r1(dBot)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm')
  +tile('Approach ≈',appr>=89?'no overhang':Math.round(appr)+'°',okA(appr))+tile('Departure ≈',dep>=89?'no overhang':Math.round(dep)+'°',okA(dep))+tile('Break-over ≈',brk>=179?'n/a':Math.round(brk)+'°',okA(brk));
 Object.assign(G,{bad:null,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
 draw3();
 }
-/* ---------- step 3a: front sensors ---------- */
+/* ---------- step 3: front sensors ---------- */
 const st3={qs:15,qh:10,cs:20,ch:120,ct:35,lh:40,l4h:30,l4f:true,l4l:false,l4r:false};
 const QTR={w:61,d:20,t:3},CAM={h:45,w:36,d:29,hv:25.9,hh:32.95},L8={w:23,h:13,t:3,hf:22.5},L4={w:12.7,h:17.8,t:2.2,hf:9};
 const rad=a=>a*Math.PI/180;
@@ -512,6 +527,7 @@ side.innerHTML=sv;
 let sh=bad.map(b=>`<strong class="bad">${b}</strong>`).join('<br>');
 if(watch.length)sh+=(sh?'<br>':'')+watch.map(w=>'<strong>Check:</strong> '+w).join('<br>');
 if(!sh)sh='<strong class="ok">No conflicts found.</strong> The front sensors fit with this drive base.';
+if(G.levelHtml)sh=G.levelHtml+'<br>'+sh;
 stat.innerHTML=sh;
 const ok=c=>c?'var(--ok)':'var(--bad)';
 out.innerHTML=tile('QTR height ≈',r1(qz0)+' mm',ok(qz0<=40))+tile('QTR ahead of turn center ≈',Math.round(qAhead)+' mm')
