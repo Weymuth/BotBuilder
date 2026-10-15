@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.10</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.10.1</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -109,7 +109,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.10</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.10.1</div>
   <h1>Sample drive bases</h1>
   <p>Work through the steps on the right. The page starts blank; each part appears in the drawing when you choose it, and the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Step 4: add a second level and place the battery, switch, and regulators. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
 </header>
@@ -263,7 +263,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
     <li>VL53L8CX carrier, Pololu #3419: 13 × 23 × 3 mm, 45° horizontal and vertical field of view, 20 mm to 4 m (Pololu product page). Drawn centered on the front edge, facing forward, 23 mm side across.</li>
     <li>VL53L4CD: 18° field of view (ST). The board is not chosen yet; it is drawn at the size of Pololu carrier #3692 (12.7 × 17.8 × 2.2 mm) as an example. Side spots are drawn 30 mm behind the front edge.</li>
     <li>Step 3 checks are footprint checks from above plus the heights shown. Wires, headers, and sensor mounts are not drawn.</li>
-    <li>Center of balance (⊕) is the weighted average of the parts drawn so far: motor #4805 101 g (Pololu), 70 × 8 mm wheel 14.2 g with tire (Pololu, 0.5 oz), hub #1081 3.2 g, bracket #2676 8.5 g, casters #955 29.8 g, #952 2.0 g, #950 0.85 g (Pololu, 1.05/0.07/0.03 oz), QTRX-MD-08A 3.1 g, OpenMV RT1062 20 g, VL53L8CX carrier 0.7 g, VL53L4CD carrier 0.5 g. Estimates: other wheel sizes scaled from the 70 × 8 mm wheel by diameter squared and width; printed cradle 10 g; deck densities acrylic 1.19, plywood 0.6, 3D-printed 0.75, aluminum 2.7 g/cm³ (typical values; a print depends on its infill). Each part counts at its own center. The battery, Teensy, motor drivers, and regulators are not placed yet, so the point will move when steps 4 and 5 add them.</li>
+    <li>Center of balance (⊕) is the weighted average of the parts drawn so far: motor #4805 101 g (Pololu), 70 × 8 mm wheel 14.2 g with tire (Pololu, 0.5 oz), hub #1081 3.2 g, bracket #2676 8.5 g, casters #955 29.8 g, #952 2.0 g, #950 0.85 g (Pololu, 1.05/0.07/0.03 oz), QTRX-MD-08A 3.1 g, OpenMV RT1062 20 g, VL53L8CX carrier 0.7 g, VL53L4CD carrier 0.5 g. Estimates: other wheel sizes scaled from the 70 × 8 mm wheel by diameter squared and width; printed cradle 10 g; deck densities acrylic 1.19 and 3D-printed 0.75 g/cm³ (typical values; a print depends on its infill). Each part counts at its own center. The battery, Teensy, motor drivers, and regulators are not placed yet, so the point will move when steps 4 and 5 add them.</li>
     <li>Step 4: the second level has the same outline and wheel cutouts as the base deck, with four standoffs. Spacing is the gap from the top of the base deck to the underside of the second level; Fit spacing sets it 5 mm above the tallest thing on the base deck (motor mounts, battery, regulators). Battery size and weight are an example until a pack is chosen (Components reference, open item); enter the real pack's numbers. D36V50F5: 25.4 × 25.4 × 9.5 mm, 7.0 g; D24V7F3: 8.6 × 13.7 × 4.1 mm, 0.5 g (Pololu). The 20 mm panel switch is drawn as a 20 mm block standing on the deck edge; its depth and weight are not published, so it adds no weight. Fuse holder and wires are not drawn. Standoff weight is not counted.</li>
     <li>Control panel: an upright 3 mm plate on the back edge, in the deck material, with a handle across the top (10 mm wide bar). It holds the 20 mm power switch, the start toggle (6 or 12 mm hole; the switch is not chosen yet), a micro-USB panel port (12 mm hole, example size), the OLED, and optional test jacks (8 mm holes, 19 mm apart, example size). OLED: Pololu #3761, 128 × 64, 1.3″, 35.6 × 33.5 × 3.8 mm, 5.5 g, 3.3 V logic, four M3 holes. Fit panel grows the panel to hold its parts with 6 mm margins. Weights of the switches, port, and jacks are not counted.</li>
     <li>Saving: work saves in this browser only. A downloaded file or a copied save code holds every setting and the robot name; open or paste it to pick up where you left off.</li>
@@ -288,7 +288,7 @@ axle:[['front','Front'],['center','Center'],['rear','Rear']],
 caster:[['c38','⅜″ · 10.1 mm'],['c12','½″ · 13.5 mm'],['c34','¾″ · 20.9 mm']],
 spacer:[['none','None'],['s16','1/16″'],['s8','1/8″'],['both','Both']],
 deck:[[3,'3 mm'],[4.5,'4.5 mm'],[6,'6 mm']],
-mat:[['acrylic','Acrylic'],['ply','Plywood'],['pla','3D-printed'],['al','Aluminum']],
+mat:[['acrylic','Acrylic'],['pla','3D-printed']],
 mount:[['pololu','Pololu bracket #2676'],['print','3D-printed cradle']],
 pos:[['above','Above deck'],['below','Below deck'],['between','In between']]};
 const st={drive:'2wd',shape:'square',place:'outside',wtype:'std',wheel:'thin',dia:70,arr:'b2b',axle:'center',wb:100,cut:20,spin:false,
@@ -798,7 +798,7 @@ persist();
 const SAVE_KEY='lrq-sample-drive-bases-v2',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3)),DEF4=JSON.parse(JSON.stringify(st4));
 const RANGE={wb:[80,160],adj:[-9,20],deck:[1,12],cut:[0,30]};
 let ready=false;
-function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.10',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3},st4:{...st4}}}
+function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.10.1',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3},st4:{...st4}}}
 function persist(){if(!ready)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()))}catch(e){}}
 function applySave(o){
  if(!o||typeof o!=='object'||!o.st||!o.st3)throw new Error('not a save');
