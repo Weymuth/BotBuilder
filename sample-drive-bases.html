@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.10.1</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.11</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -16,7 +16,7 @@
   --caster:#c4bff2; --caster-line:#534ab7;
   --belt:#ba7517; --limit:#c0392b; --spin:#1f6f8b;
   --sensor:#f3d27a; --sensor-line:#8a6510; --tof:#f2b8cc; --tof-line:#9c2f5a;
-  --batt:#a9cdf2; --batt-line:#1d5f9e; --reg:#cfdc96; --reg-line:#56631a; --pnl:#ead9c3; --pnl-line:#7a5a33; --hole:#2b2f2e;
+  --batt:#a9cdf2; --batt-line:#1d5f9e; --reg:#cfdc96; --reg-line:#56631a; --pnl:#ead9c3; --pnl-line:#7a5a33; --ctl:#c9d3e0; --ctl-line:#3f4f66; --col:#b3e2ab; --col-line:#2d7a28; --hole:#2b2f2e;
   --ok:#2e7d32; --bad:#c0392b; --warn-bg:#fdecea;
   --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -30,7 +30,7 @@
   --caster:#3c3489; --caster-line:#c4bff2;
   --belt:#ef9f27; --limit:#f08070; --spin:#6cc0dc;
   --sensor:#5e4a12; --sensor-line:#f3d27a; --tof:#5e1f37; --tof-line:#f2b8cc;
-  --batt:#173b5e; --batt-line:#a9cdf2; --reg:#3b4413; --reg-line:#cfdc96; --pnl:#4a3a26; --pnl-line:#ead9c3; --hole:#0b0d0c;
+  --batt:#173b5e; --batt-line:#a9cdf2; --reg:#3b4413; --reg-line:#cfdc96; --pnl:#4a3a26; --pnl-line:#ead9c3; --ctl:#2a3442; --ctl-line:#c9d3e0; --col:#1e4a1b; --col-line:#b3e2ab; --hole:#0b0d0c;
   --ok:#7cc47f; --bad:#f08070; --warn-bg:#3a1c19; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#131817; --panel:#1b2220; --fg:#e6ebe9; --muted:#9aa6a1; --line:#2f3936;
@@ -41,7 +41,7 @@
   --caster:#3c3489; --caster-line:#c4bff2;
   --belt:#ef9f27; --limit:#f08070; --spin:#6cc0dc;
   --sensor:#5e4a12; --sensor-line:#f3d27a; --tof:#5e1f37; --tof-line:#f2b8cc;
-  --batt:#173b5e; --batt-line:#a9cdf2; --reg:#3b4413; --reg-line:#cfdc96; --pnl:#4a3a26; --pnl-line:#ead9c3; --hole:#0b0d0c;
+  --batt:#173b5e; --batt-line:#a9cdf2; --reg:#3b4413; --reg-line:#cfdc96; --pnl:#4a3a26; --pnl-line:#ead9c3; --ctl:#2a3442; --ctl-line:#c9d3e0; --col:#1e4a1b; --col-line:#b3e2ab; --hole:#0b0d0c;
   --ok:#7cc47f; --bad:#f08070; --warn-bg:#3a1c19; color-scheme:dark}
 body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 var(--sans)}
 .wrap{max-width:1240px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:20px}
@@ -109,9 +109,9 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.10.1</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.11</div>
   <h1>Sample drive bases</h1>
-  <p>Work through the steps on the right. The page starts blank; each part appears in the drawing when you choose it, and the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Step 4: add a second level and place the battery, switch, and regulators. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
+  <p>Work through the steps on the right. The page starts blank; each part appears in the drawing when you choose it, and the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Step 4: add a second level and place the battery, switch, and regulators. Step 5: place the Teensy, motor drivers, IMU, mux, and color sensors. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
 </header>
 
 <div class="work">
@@ -126,6 +126,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
   <button id="tab2" onclick="go(2)">2 · Casters &amp; mount</button>
   <button id="tab3" onclick="go(3)">3 · Front sensors</button>
   <button id="tab4" onclick="go(4)">4 · Power</button>
+  <button id="tab5" onclick="go(5)">5 · Control</button>
 </div>
 
 <section id="step1">
@@ -225,7 +226,36 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="status" id="status4"></div>
 <div class="read" id="out4"></div>
-<div class="nav"><button class="go" onclick="go(3)">← Step 3</button><span></span></div>
+<div class="nav"><button class="go" onclick="go(3)">← Step 3</button><button class="go" onclick="go(5)">Next: step 5 →</button></div>
+</section>
+
+<section id="step5" hidden>
+<div class="controls">
+  <div class="sub">1 · Teensy 4.1 on OONO D-1395P</div>
+  <div class="row"><span class="l">Size (mm)</span><input type="number" id="s5-tl" min="30" max="160" step="1" aria-label="Teensy carrier length in millimetres"><span class="hint">×</span><input type="number" id="s5-tw" min="15" max="100" step="1" aria-label="Teensy carrier width in millimetres"><span class="hint">×</span><input type="number" id="s5-th" min="5" max="40" step="1" aria-label="Teensy carrier height in millimetres"></div>
+  <div class="row"><span class="l">Weight (g)</span><input type="number" id="s5-tm" min="5" max="150" step="1" aria-label="Teensy carrier weight in grams"><span class="hint">Example until a board is measured.</span></div>
+  <div class="row" id="g5-tw5"><span class="l">Where</span></div>
+  <div class="row" id="g5-ts"><span class="l">Spot</span></div>
+  <div class="row" id="g5-tor"><span class="l">Turn</span></div>
+  <div class="sub">2 · VNH5019 motor drivers</div>
+  <div class="row" id="g5-dw"><span class="l">Where</span></div>
+  <div class="row" id="g5-dl"><span class="l">Layout</span></div>
+  <div class="row" id="g5-ds"><span class="l">Spot</span><span class="hint" id="ds-hint"></span></div>
+  <div class="sub">3 · BNO085 IMU</div>
+  <div class="row" id="g5-iw"><span class="l">Where</span></div>
+  <div class="row" id="g5-is"><span class="l">Spot</span></div>
+  <div class="sub">4 · TCA9548A I²C mux</div>
+  <div class="row" id="g5-mw"><span class="l">Where</span></div>
+  <div class="row" id="g5-ms"><span class="l">Spot</span></div>
+  <div class="sub">5 · AS7341 color sensors (2, facing down)</div>
+  <div class="row"><span class="l">Behind front edge</span><input type="range" id="s5-cs" min="0" max="80" step="1" oninput="s5set('cs',+this.value)" aria-label="Color sensor distance behind the front edge in millimetres"><span class="val" id="s5-csv"></span></div>
+  <div class="row"><span class="l">Out from center</span><input type="range" id="s5-cx" min="15" max="70" step="1" oninput="s5set('cx',+this.value)" aria-label="Color sensor distance from the centerline in millimetres"><span class="val" id="s5-cxv"></span></div>
+  <div class="row"><span class="l">Height off floor</span><input type="range" id="s5-ch" min="3" max="40" step="0.5" oninput="s5set('ch',+this.value)" aria-label="Color sensor height above the floor in millimetres"><span class="val" id="s5-chv"></span></div>
+</div>
+
+<div class="status" id="status5"></div>
+<div class="read" id="out5"></div>
+<div class="nav"><button class="go" onclick="go(4)">← Step 4</button><span></span></div>
 </section>
 
 <div class="saveload">
@@ -266,6 +296,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
     <li>Center of balance (⊕) is the weighted average of the parts drawn so far: motor #4805 101 g (Pololu), 70 × 8 mm wheel 14.2 g with tire (Pololu, 0.5 oz), hub #1081 3.2 g, bracket #2676 8.5 g, casters #955 29.8 g, #952 2.0 g, #950 0.85 g (Pololu, 1.05/0.07/0.03 oz), QTRX-MD-08A 3.1 g, OpenMV RT1062 20 g, VL53L8CX carrier 0.7 g, VL53L4CD carrier 0.5 g. Estimates: other wheel sizes scaled from the 70 × 8 mm wheel by diameter squared and width; printed cradle 10 g; deck densities acrylic 1.19 and 3D-printed 0.75 g/cm³ (typical values; a print depends on its infill). Each part counts at its own center. The battery, Teensy, motor drivers, and regulators are not placed yet, so the point will move when steps 4 and 5 add them.</li>
     <li>Step 4: the second level has the same outline and wheel cutouts as the base deck, with four standoffs. Spacing is the gap from the top of the base deck to the underside of the second level; Fit spacing sets it 5 mm above the tallest thing on the base deck (motor mounts, battery, regulators). Battery size and weight are an example until a pack is chosen (Components reference, open item); enter the real pack's numbers. D36V50F5: 25.4 × 25.4 × 9.5 mm, 7.0 g; D24V7F3: 8.6 × 13.7 × 4.1 mm, 0.5 g (Pololu). The 20 mm panel switch is drawn as a 20 mm block standing on the deck edge; its depth and weight are not published, so it adds no weight. Fuse holder and wires are not drawn. Standoff weight is not counted.</li>
     <li>Control panel: an upright 3 mm plate on the back edge, in the deck material, with a handle across the top (10 mm wide bar). It holds the 20 mm power switch, the start toggle (6 or 12 mm hole; the switch is not chosen yet), a micro-USB panel port (12 mm hole, example size), the OLED, and optional test jacks (8 mm holes, 19 mm apart, example size). OLED: Pololu #3761, 128 × 64, 1.3″, 35.6 × 33.5 × 3.8 mm, 5.5 g, 3.3 V logic, four M3 holes. Fit panel grows the panel to hold its parts with 6 mm margins. Weights of the switches, port, and jacks are not counted.</li>
+    <li>Step 5: Teensy 4.1 on the OONO D-1395P carrier is drawn at an example 85 × 55 × 20 mm, 30 g, because CZH-Labs does not publish the board size (Components reference open item); enter measured numbers. VNH5019 #1451: 38.1 × 27.9 × 7.6 mm, 6.5 g (Pololu). BNO085 #4754: 25.6 × 22.7 × 4.6 mm (Adafruit); weight drawn as 3 g, an estimate. I²C mux drawn as Adafruit #5626, 40.6 × 20.2 × 4.8 mm (Adafruit); weight 4 g, an estimate; the class has not chosen a mux board. AS7341 #4698: Adafruit does not list the board size; drawn at an example 25.4 × 17.8 × 4.6 mm and 2 g, facing down. "Next to each motor" puts each driver just ahead of a front motor or behind a rear one, so the motor leads stay short.</li>
     <li>Saving: work saves in this browser only. A downloaded file or a copied save code holds every setting and the robot name; open or paste it to pick up where you left off.</li>
     <li>Speed bumps are up to 1 cm high (rule 3.5.1). The 225 mm limit is the class size target (25 cm tunnel minus 10%). Length has no limit.</li>
   </ul>
@@ -314,7 +345,7 @@ document.getElementById('levelbtn').addEventListener('click',makeLevel);
 document.getElementById('g-wb').appendChild(document.getElementById('wb-hint'));
 function preset(p){Object.assign(st,p);rev.body=rev.drive=true;document.getElementById('wb').value=st.wb;draw()}
 let curStep=1,curView='top';
-function go(n,noScroll){curStep=n;[1,2,3,4].forEach(i=>{document.getElementById('step'+i).hidden=n!==i;document.getElementById('tab'+i).classList.toggle('on',n===i)});draw();if(!noScroll&&window.matchMedia('(max-width:900px)').matches)document.getElementById('tab'+n).scrollIntoView({block:'start'})}
+function go(n,noScroll){curStep=n;[1,2,3,4,5].forEach(i=>{document.getElementById('step'+i).hidden=n!==i;document.getElementById('tab'+i).classList.toggle('on',n===i)});draw();if(!noScroll&&window.matchMedia('(max-width:900px)').matches)document.getElementById('tab'+n).scrollIntoView({block:'start'})}
 function setView(v){curView=v;[['top3','top'],['side3','side'],['rear3','rear']].forEach(([id,k])=>document.getElementById(id).toggleAttribute('hidden',v!==k));
  [['vt','top'],['vs','side'],['vr','rear']].forEach(([id,k])=>document.getElementById(id).classList.toggle('on',v===k));
  document.getElementById('viewhint').textContent=v==='top'?'Front is up.':v==='side'?'Right side. Front is left. Wheel drawn see-through.':'Looking at the back. The robot\'s left is on your left.';persist()}
@@ -555,6 +586,13 @@ const WHERE=[['under','Under deck'],['base','Base deck'],['lv2','Second level']]
 const OPT4={tg:[[6,'6 mm (mini)'],[12,'12 mm (standard)']],tj:[['off','None'],['on','Two covered jacks']],t2:[[3,'3 mm'],[4.5,'4.5 mm'],[6,'6 mm']],bwhere:WHERE,bor:[['len','Lengthwise'],['cross','Crosswise']],sw:[['rear','Rear edge'],['left','Left side'],['right','Right side']],r5w:WHERE,r5:SPOTS,r3w:WHERE,r3:SPOTS};
 const L4K={pnl:'pnl',pw:'pnl',ph:'pnl',hh:'pnl',tg:'pnl',tj:'pnl',lv2:'lv2',gap:'lv2',t2:'lv2',bl:'batt',bw:'batt',bh:'batt',bm:'batt',bwhere:'batt',bor:'batt',by:'batt',bx:'batt',sw:'sw',r5w:'reg',r5:'reg',r3w:'reg',r3:'reg'};
 rev.batt=rev.sw=rev.reg=false;
+const st5={tl:85,tw:55,th:20,tm:30,tw5:'base',ts:'c',tor:'len',dw:'base',dl:'near',ds:'rr',iw:'base',is:'c',mw:'base',ms:'fl',cs:25,cx:30,ch:10};
+const OPT5={tw5:WHERE,ts:SPOTS,tor:[['len','Lengthwise'],['cross','Crosswise']],dw:WHERE,dl:[['near','Next to each motor'],['group','Grouped at a spot']],ds:SPOTS,iw:WHERE,is:SPOTS,mw:WHERE,ms:SPOTS};
+const L5K={tl:'tee',tw:'tee',th:'tee',tm:'tee',tw5:'tee',ts:'tee',tor:'tee',dw:'drv',dl:'drv',ds:'drv',iw:'imu',is:'imu',mw:'mux',ms:'mux',cs:'col',cx:'col',ch:'col'};
+rev.tee=rev.drv=rev.imu=rev.mux=rev.col=false;
+function s5set(k,v){st5[k]=v;rev[L5K[k]]=true;draw3()}
+for(const k in OPT5){const g=document.getElementById('g5-'+k);OPT5[k].forEach(([v,t])=>{const b=document.createElement('button');b.textContent=t;b.dataset.k5=k;b.dataset.v=String(v);b.onclick=()=>s5set(k,v);g.appendChild(b)})}
+['tl','tw','th','tm'].forEach(k=>document.getElementById('s5-'+k).addEventListener('input',e=>{const el=e.target,v=parseFloat(el.value);if(v>=+el.min&&v<=+el.max)s5set(k,v)}));
 function s4set(k,v){st4[k]=v;if(L4K[k]!=='lv2'&&L4K[k]!=='pnl')rev[L4K[k]]=true;if(L4K[k]==='pnl'&&k!=='pnl')st4.pnl=true;draw3()}
 function fitPanel(){if(G.pnlNeed){st4.pnl=true;st4.pw=Math.max(st4.pw,G.pnlNeed[0]);st4.ph=Math.max(st4.ph,G.pnlNeed[1]);draw3()}}
 function fitSpacing(){if(G.fit4){st4.gap=G.fit4;draw3()}}
@@ -567,6 +605,10 @@ function draw3(){
 const $=id=>document.getElementById(id);
 [['qs',' mm'],['qh',' mm'],['cs',' mm'],['ch',' mm'],['ct','°'],['lh',' mm'],['l4h',' mm']].forEach(([k,u])=>{$(k).value=st3[k];$(k+'v').textContent=st3[k]+u});
 ['l4f','l4l','l4r'].forEach(k=>$(k).classList.toggle('on',rev.tof&&st3[k]));
+document.querySelectorAll('button[data-k5]').forEach(b=>{const k=b.dataset.k5;b.classList.toggle('on',rev[L5K[k]]&&String(st5[k])===b.dataset.v);if(b.dataset.v==='lv2')b.style.opacity=st4.lv2?'':'0.45'});
+['tl','tw','th','tm'].forEach(k=>{const el=$('s5-'+k);if(document.activeElement!==el)el.value=st5[k]});
+[['cs',' mm'],['cx',' mm'],['ch',' mm']].forEach(([k,u])=>{$('s5-'+k).value=st5[k];$('s5-'+k+'v').textContent=st5[k]+u});
+$('g5-ds').classList.toggle('dim',st5.dl!=='group');$('ds-hint').textContent=st5.dl==='group'?'':'Used when grouped';
 {const lay={lv2:st4.lv2,batt:rev.batt,sw:rev.sw,reg:rev.reg,pnl:st4.pnl};
  $('pnlbtn').textContent=st4.pnl?'Remove control panel':'Add control panel';$('pnlbtn').classList.toggle('on',st4.pnl);
  ['g4-pnlrows1','g4-pnlrows2','g4-pnlrows3','g4-tg','g4-tj'].forEach(id=>$(id).classList.toggle('dim',!st4.pnl));
@@ -638,6 +680,16 @@ const PN=s4.pnl,PT=3;
 if(PN){const pa=s4.pw*s4.ph*PT*{acrylic:1.19,ply:0.6,pla:0.75,al:2.7}[st.mat]/1000,ha=(s4.pw-10+2*s4.hh)*10*PT*{acrylic:1.19,ply:0.6,pla:0.75,al:2.7}[st.mat]/1000;
  items.push({name:'control panel',kind:'pnl',m:pa+ha+5.5,x0:-s4.pw/2,x1:s4.pw/2,y0:g.L/2-PT,y1:g.L/2,z0:g.dTop,z1:g.dTop+s4.ph})}
 if(RS4&&!PN){const sp=s4.sw==='rear'?[0,g.L/2]:[s4.sw==='left'?-hwAt(0):hwAt(0),0];items.push(bx4('power switch','sw',sp[0],sp[1],20,20,[g.dTop,g.dTop+20],0))}
+/* step 5 items */
+const s5=st5,R5={tee:rev.tee,drv:rev.drv,imu:rev.imu,mux:rev.mux,col:rev.col};
+const sp5=(k)=>{const p=SPOT[k];return[p[0]*g.hw,p[1]*g.L/2]};
+if(R5.tee){const c=sp5(s5.ts),wd=s5.tor==='len'?[s5.tw,s5.tl]:[s5.tl,s5.tw];items.push({...bx4('Teensy carrier','ctl',c[0],c[1],wd[0],wd[1],whereZ(s5.tw5,s5.th),s5.tm),step:5})}
+if(R5.drv&&G.rd){const n=g.motors.length,DW=38.1,DD=27.9,DH=7.6;
+ if(s5.dl==='near')g.motors.forEach(({s,y},i)=>{const fwd=y<=g.cy+0.5?-1:1;items.push({...bx4(`motor driver ${i+1}`,'ctl',s*(g.wf-34),y+fwd*(12.5+DD/2+2),DW,DD,whereZ(s5.dw,DH),6.5),step:5})});
+ else{const c=sp5(s5.ds),tot=n*DD+(n-1)*3;for(let i=0;i<n;i++)items.push({...bx4(`motor driver ${i+1}`,'ctl',c[0],c[1]-tot/2+DD/2+i*(DD+3),DW,DD,whereZ(s5.dw,DH),6.5),step:5})}}
+if(R5.imu){const c=sp5(s5.is);items.push({...bx4('IMU','ctl',c[0],c[1],25.6,22.7,whereZ(s5.iw,4.6),3),step:5})}
+if(R5.mux){const c=sp5(s5.ms);items.push({...bx4('I²C mux','ctl',c[0],c[1],40.6,20.2,whereZ(s5.mw,4.8),4),step:5})}
+if(R5.col)[-1,1].forEach((sg,i)=>items.push({...bx4(`color sensor ${i===0?'left':'right'}`,'col',sg*s5.cx,F+s5.cs,25.4,17.8,[s5.ch,s5.ch+4.6],2),step:5}));
 const obs=[];
 if(G.rd){g.motors.forEach(({s,y})=>obs.push({name:'motors',x0:Math.min(s*(g.wf-67),s*(g.wf+2)),x1:Math.max(s*(g.wf-67),s*(g.wf+2)),y0:y-12.5,y1:y+12.5,z0:g.mBot,z1:g.mTop}));
  g.wheels.forEach(q=>obs.push({name:'wheels',x0:Math.min(q.s*g.wi,q.s*g.wo),x1:Math.max(q.s*g.wi,q.s*g.wo),y0:q.y0,y1:q.y1,z0:0,z1:g.D}));
@@ -646,13 +698,14 @@ if(RQ)obs.push({name:'line sensor',x0:-qx,x1:qx,y0:qy0,y1:qy1,z0:qz0,z1:qz1});
 if(RC)obs.push({name:'camera',x0:-CAM.w/2,x1:CAM.w/2,y0:cy0,y1:cy1,z0:cz0,z1:cz1});
 if(G.rb)obs.push({name:'base deck',x0:-g.hw,x1:g.hw,y0:-g.L/2,y1:g.L/2,z0:g.dBot,z1:g.dTop});
 const ov=(a,b)=>a.x0<b.x1-0.5&&a.x1>b.x0+0.5&&a.y0<b.y1-0.5&&a.y1>b.y0+0.5&&a.z0<b.z1-0.5&&a.z1>b.z0+0.5;
-const bad4=[],watch4=[];
+const bad4=[],watch4=[],bad5=[],watch5=[];
 items.forEach((a,i)=>{const hits=new Set();
  obs.forEach(b=>{if(a.kind==='lv2'&&b.name==='wheels'&&st.place!=='outside')return;if(ov(a,b))hits.add(b.name)});
  items.forEach((b,j)=>{if(j>i&&!(a.kind==='lv2'&&b.kind==='pnl')&&!(a.kind==='pnl'&&b.kind==='lv2')&&ov(a,b))hits.add(b.name)});
- if(hits.size)bad4.push(`The ${a.name} runs into the ${[...hits].join(' and the ')}.`);
- if(G.rb&&a.kind!=='sw'&&a.kind!=='lv2'&&[[a.x0,a.y0],[a.x1,a.y0],[a.x0,a.y1],[a.x1,a.y1]].some(([x,y])=>Math.abs(y)>g.L/2+0.5||Math.abs(x)>hwAt(y)+0.5))watch4.push(`The ${a.name} hangs over the edge of the deck.`);
- if(a.z0<10)bad4.push(`The ${a.name} is ${r1(a.z0)} mm off the floor, under the 10 mm speed-bump height.`)});
+ const B=a.step===5?bad5:bad4,W=a.step===5?watch5:watch4;
+ if(hits.size)B.push(`The ${a.name} runs into the ${[...hits].join(' and the ')}.`);
+ if(G.rb&&a.kind!=='sw'&&a.kind!=='lv2'&&[[a.x0,a.y0],[a.x1,a.y0],[a.x0,a.y1],[a.x1,a.y1]].some(([x,y])=>Math.abs(y)>g.L/2+0.5||Math.abs(x)>hwAt(y)+0.5))W.push(`The ${a.name} hangs over the edge of the deck.`);
+ if(a.z0<10&&a.kind!=='col')B.push(`The ${a.name} is ${r1(a.z0)} mm off the floor, under the 10 mm speed-bump height.`)});
 {let need=0;if(G.rd&&st.pos!=='below')need=Math.max(need,g.mTop-g.dTop);items.forEach(a=>{if(a.kind!=='lv2'&&a.kind!=='pnl'&&Math.abs(a.z0-g.dTop)<0.01)need=Math.max(need,a.z1-g.dTop)});G.fit4=Math.max(15,Math.min(100,Math.ceil(need+5)))}
 /* control panel face layout (u across, v down from panel top) */
 let pnlFace=null;
@@ -703,7 +756,7 @@ if(RT)h+=`<line x1="${lx}" y1="${lyy}" x2="${lx+16}" y2="${lyy}" stroke="var(--t
   else t4+=R(a.x0,a.y0,a.x1,a.y1,`rx="2" fill="var(--${a.kind})" stroke="var(--${a.kind}-line)" stroke-width="1"${dash}`)});
  if(PN)t4+=`<line x1="${X(-s4.pw/2+5)}" y1="${Y(g.L/2-1.5)}" x2="${X(s4.pw/2-5)}" y2="${Y(g.L/2-1.5)}" stroke="var(--pnl-line)" stroke-width="4" stroke-linecap="round"/>`;
  h+=t4;let ly4=300;const lx4=500;
- [LV&&['none','var(--accent)','Second level outline'],RB4&&['var(--batt)','var(--batt-line)','Battery'],(RG4||RS4)&&['var(--reg)','var(--reg-line)','Regulators / switch'],PN&&['var(--pnl)','var(--pnl-line)','Control panel + handle']].filter(Boolean).forEach(([f,s4c,tx])=>{h+=`<rect x="${lx4}" y="${ly4-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s4c}" stroke-width="1"/><text x="${lx4+24}" y="${ly4}" dominant-baseline="central">${tx}</text>`;ly4+=26});
+ [LV&&['none','var(--accent)','Second level outline'],RB4&&['var(--batt)','var(--batt-line)','Battery'],(RG4||RS4)&&['var(--reg)','var(--reg-line)','Regulators / switch'],PN&&['var(--pnl)','var(--pnl-line)','Control panel + handle'],items.some(a=>a.kind==='ctl')&&['var(--ctl)','var(--ctl-line)','Control boards'],R5.col&&['var(--col)','var(--col-line)','Color sensors']].filter(Boolean).forEach(([f,s4c,tx])=>{h+=`<rect x="${lx4}" y="${ly4-8}" width="16" height="16" rx="3" fill="${f}" stroke="${s4c}" stroke-width="1"/><text x="${lx4+24}" y="${ly4}" dominant-baseline="central">${tx}</text>`;ly4+=26});
  if(items.some(a=>a.kind!=='lv2'&&a.z1<=g.dBot+0.01))h+=`<text x="${lx4}" y="${ly4+6}">Dashed = under the deck.</text>`}
 /* center of balance: parts drawn so far */
 const cgSym=(x,y)=>`<g><circle cx="${x}" cy="${y}" r="8" fill="var(--panel)" stroke="var(--fg)" stroke-width="1.5"/><path d="M${x} ${y} L${x+8} ${y} A8 8 0 0 1 ${x} ${y+8} Z M${x} ${y} L${x-8} ${y} A8 8 0 0 1 ${x} ${y-8} Z" fill="var(--fg)"/></g>`;
@@ -730,7 +783,7 @@ const Mt=pts3.reduce((a,p)=>a+p[0],0),cg=[1,2,3].map(i=>pts3.reduce((a,p)=>a+p[0
 if(Mt>0)h+=cgSym(X(cg[0]),Y(cg[1]));
 const dAx=cg[1]-g.cy,axN=st.drive==='2wd'?'drive axle':'wheelbase center';
 const sym='<svg viewBox="-9 -9 18 18" aria-hidden="true">'+cgSym(0,0)+'</svg>';
-document.getElementById('cgline').innerHTML=Mt===0?'':`<span>${sym} Center of balance</span><span><b>${Math.round(Math.abs(dAx))} mm</b> ${dAx<=0?'ahead of':'behind'} the ${axN}</span><span><b>${Math.round(cg[2])} mm</b> above the floor</span><span><b>${Math.round(Math.abs(cg[0]))} mm</b> ${Math.abs(cg[0])<0.5?'off center':cg[0]>0?'right of center':'left of center'}</span><span><b>${Math.round(Mt)} g</b> of parts so far (${RB4?'Teensy, drivers and wiring come later':'no battery or electronics yet'})</span>`;
+document.getElementById('cgline').innerHTML=Mt===0?'':`<span>${sym} Center of balance</span><span><b>${Math.round(Math.abs(dAx))} mm</b> ${dAx<=0?'ahead of':'behind'} the ${axN}</span><span><b>${Math.round(cg[2])} mm</b> above the floor</span><span><b>${Math.round(Math.abs(cg[0]))} mm</b> ${Math.abs(cg[0])<0.5?'off center':cg[0]>0?'right of center':'left of center'}</span><span><b>${Math.round(Mt)} g</b> of parts so far (${RB4&&R5.tee&&R5.drv?'wires, screws and standoffs not counted':RB4?'some electronics still to place; wires not counted':'no battery or electronics yet'})</span>`;
 G.cgSide=Mt>0?cgSym(X2(cg[1]),Z2(cg[2])):'';
 h+=g.leg1;
 if(!(G.rb||G.rd||RQ||RC||RT))h+=`<text x="340" y="200" text-anchor="middle" style="font-size:15px;fill:var(--fg)">Start in step 1.</text><text x="340" y="224" text-anchor="middle">Pick a sample, or choose a shape and a drive.</text>`;
@@ -792,13 +845,20 @@ out.innerHTML=!(RQ||RC||RT)?'':(RQ?tile('QTR height ≈',r1(qz0)+' mm',ok(qz0<=4
   if(!t)t='<strong class="ok">No conflicts found.</strong> The power parts fit.';if(LV&&G.fit4>s4.gap)t+=`<br>Fit spacing would set ${G.fit4} mm.`;s4el.innerHTML=t;
   const b=items.find(a=>a.kind==='batt');
   o4.innerHTML=(LV?tile('Second level underside ≈',r1(z2b)+' mm')+tile('Second level top ≈',r1(z2t)+' mm',ok(z2t<=225)):'')+(b?tile('Battery bottom ≈',r1(b.z0)+' mm',ok(b.z0>=10))+tile('Battery top ≈',r1(b.z1)+' mm',ok(b.z1<=225)):'')+(PN?tile('Handle top ≈',Math.round(g.dTop+s4.ph+s4.hh)+' mm',ok(g.dTop+s4.ph+s4.hh<=225)):'')+tile('Height ≈',Math.round(Ht)+' mm',ok(Ht<=225))}}
+{const el=$('status5'),o5=$('out5');
+ if(!Object.values(R5).some(Boolean)){el.innerHTML='<span class="summary">Choose a part in this step to place it.</span>';o5.innerHTML=''}
+ else{if(R5.drv&&!G.rd)watch5.push('Choose a drive in step 1 so the motor drivers have motors to sit next to.');
+  let t=bad5.map(b=>`<strong class="bad">${b}</strong>`).join('<br>');if(watch5.length)t+=(t?'<br>':'')+watch5.map(w=>'<strong>Check:</strong> '+w).join('<br>');
+  if(!t)t='<strong class="ok">No conflicts found.</strong> The control parts fit.';el.innerHTML=t;
+  const im=items.find(a=>a.name==='IMU'),te=items.find(a=>a.name==='Teensy carrier'),cl=items.find(a=>a.kind==='col');
+  o5.innerHTML=(im?tile('IMU from turn center ≈',Math.round(Math.hypot((im.x0+im.x1)/2,(im.y0+im.y1)/2-g.cy))+' mm'):'')+(te?tile('Teensy carrier top ≈',r1(te.z1)+' mm',ok(te.z1<=225)):'')+(cl?tile('Color sensors off floor ≈',r1(cl.z0)+' mm'):'')+tile('Height ≈',Math.round(Ht)+' mm',ok(Ht<=225))}}
 persist();
 }
 /* ---------- save, export, import ---------- */
-const SAVE_KEY='lrq-sample-drive-bases-v2',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3)),DEF4=JSON.parse(JSON.stringify(st4));
+const SAVE_KEY='lrq-sample-drive-bases-v2',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3)),DEF4=JSON.parse(JSON.stringify(st4)),DEF5=JSON.parse(JSON.stringify(st5));
 const RANGE={wb:[80,160],adj:[-9,20],deck:[1,12],cut:[0,30]};
 let ready=false;
-function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.10.1',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3},st4:{...st4}}}
+function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.11',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3},st4:{...st4},st5:{...st5}}}
 function persist(){if(!ready)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()))}catch(e){}}
 function applySave(o){
  if(!o||typeof o!=='object'||!o.st||!o.st3)throw new Error('not a save');
@@ -807,6 +867,9 @@ function applySave(o){
  for(const k in DEF)if(k in o.st&&typeof o.st[k]===typeof DEF[k])st[k]=o.st[k];
  for(const k in opts)if(!opts[k].some(([v])=>String(v)===String(st[k])))st[k]=DEF[k];
  for(const k in RANGE){const [a,b]=RANGE[k];if(!(st[k]>=a&&st[k]<=b))st[k]=DEF[k]}
+ Object.assign(st5,DEF5);if(o.st5&&typeof o.st5==='object'){for(const k in DEF5)if(k in o.st5&&typeof o.st5[k]===typeof DEF5[k])st5[k]=o.st5[k];
+  for(const k in OPT5)if(!OPT5[k].some(([v])=>String(v)===String(st5[k])))st5[k]=DEF5[k];
+  for(const k of ['tl','tw','th','tm','cs','cx','ch']){const el=document.getElementById('s5-'+k);if(!(st5[k]>=+el.min&&st5[k]<=+el.max))st5[k]=DEF5[k]}}
  Object.assign(st4,DEF4);if(o.st4&&typeof o.st4==='object'){for(const k in DEF4)if(k in o.st4&&typeof o.st4[k]===typeof DEF4[k])st4[k]=o.st4[k];
   for(const k in OPT4)if(!OPT4[k].some(([v])=>String(v)===String(st4[k])))st4[k]=DEF4[k];
   for(const k of ['gap','by','bx','bl','bw','bh','bm','pw','ph','hh']){const el=document.getElementById('s4-'+k);if(!(st4[k]>=+el.min&&st4[k]<=+el.max))st4[k]=DEF4[k]}}
@@ -815,7 +878,7 @@ function applySave(o){
   if(typeof v==='number'&&el&&el.type==='range'&&!(v>=+el.min&&v<=+el.max))continue;st3[k]=v}
  document.getElementById('rname').value=typeof o.name==='string'?o.name.slice(0,40):'';
  document.getElementById('wb').value=st.wb;document.getElementById('deckc').value=st.deck;
- setView(['side','rear'].includes(o.view)?o.view:'top');go([1,2,3,4].includes(o.step)?o.step:1,true)}
+ setView(['side','rear'].includes(o.view)?o.view:'top');go([1,2,3,4,5].includes(o.step)?o.step:1,true)}
 const say=t=>{document.getElementById('smsg').textContent=t};
 const fname=()=>{const n=document.getElementById('rname').value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return `drive-base-${n||'robot'}-${new Date().toISOString().slice(0,10)}.json`};
 const encode=o=>'LRQDB1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
@@ -834,7 +897,7 @@ document.getElementById('bload').addEventListener('click',()=>{try{applySave(dec
 document.getElementById('bclose').addEventListener('click',()=>{box.hidden=true;say('')});
 document.getElementById('breset').addEventListener('click',()=>{document.getElementById('resetq').hidden=false});
 document.getElementById('bno').addEventListener('click',()=>{document.getElementById('resetq').hidden=true});
-document.getElementById('byes').addEventListener('click',()=>{document.getElementById('resetq').hidden=true;applySave({st:DEF,st3:DEF3,st4:DEF4,name:'',step:1,view:'top',rev:{}});say('Started over with a blank page.')});
+document.getElementById('byes').addEventListener('click',()=>{document.getElementById('resetq').hidden=true;applySave({st:DEF,st3:DEF3,st4:DEF4,st5:DEF5,name:'',step:1,view:'top',rev:{}});say('Started over with a blank page.')});
 let saved=null;try{saved=JSON.parse(localStorage.getItem(SAVE_KEY)||'null')}catch(e){}
 ready=true;
 if(saved){try{applySave(saved)}catch(e){draw()}}else draw();
