@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>LRQ 00 Reference - Sample Drive Bases v1.11</title>
+<title>LRQ 00 Reference - Sample Drive Bases v1.12</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
 /* Layout: two-step workbench — step 1 top view, step 2 side view; controls, scale drawing, readouts, notes */
@@ -109,9 +109,9 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="wrap">
 <header>
-  <div class="code">LRQ 00 · REFERENCE · v1.11</div>
+  <div class="code">LRQ 00 · REFERENCE · v1.12</div>
   <h1>Sample drive bases</h1>
-  <p>Work through the steps on the right. The page starts blank; each part appears in the drawing when you choose it, and the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Step 4: add a second level and place the battery, switch, and regulators. Step 5: place the Teensy, motor drivers, IMU, mux, and color sensors. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
+  <p>Work through the steps on the right. The page starts blank; each part appears in the drawing when you choose it, and the drawing keeps the whole robot. Step 1: lay out the drive base. Step 2: set casters, deck, and motor mount. Step 3: add the front sensors. Step 4: add a second level and place the battery, switch, and regulators. Step 5: place the Teensy, motor drivers, IMU, mux, and color sensors. Step 6: check tipping and drive-wheel grip on a 25° ramp. Switch between top and side views at any time. Drawn to scale with Pololu 25D gearmotors.</p>
 </header>
 
 <div class="work">
@@ -127,6 +127,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
   <button id="tab3" onclick="go(3)">3 · Front sensors</button>
   <button id="tab4" onclick="go(4)">4 · Power</button>
   <button id="tab5" onclick="go(5)">5 · Control</button>
+  <button id="tab6" onclick="go(6)">6 · Ramp &amp; tip</button>
 </div>
 
 <section id="step1">
@@ -255,7 +256,14 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
 
 <div class="status" id="status5"></div>
 <div class="read" id="out5"></div>
-<div class="nav"><button class="go" onclick="go(4)">← Step 4</button><span></span></div>
+<div class="nav"><button class="go" onclick="go(4)">← Step 4</button><button class="go" onclick="go(6)">Next: step 6 →</button></div>
+</section>
+
+<section id="step6" hidden>
+<p class="summary">This step tilts the center of balance 25° (the steepest ramp, rule 3.7) both ways: facing up the ramp and facing down it. Open Side view to see where the balance point lands. Nothing to choose here; change the robot in steps 1 to 5 and the checks update.</p>
+<div class="status" id="status6"></div>
+<div class="read" id="out6"></div>
+<div class="nav"><button class="go" onclick="go(5)">← Step 5</button><span></span></div>
 </section>
 
 <div class="saveload">
@@ -297,6 +305,7 @@ button.fix{border-color:var(--accent);color:var(--accent);font-weight:500}
     <li>Step 4: the second level has the same outline and wheel cutouts as the base deck, with four standoffs. Spacing is the gap from the top of the base deck to the underside of the second level; Fit spacing sets it 5 mm above the tallest thing on the base deck (motor mounts, battery, regulators). Battery size and weight are an example until a pack is chosen (Components reference, open item); enter the real pack's numbers. D36V50F5: 25.4 × 25.4 × 9.5 mm, 7.0 g; D24V7F3: 8.6 × 13.7 × 4.1 mm, 0.5 g (Pololu). The 20 mm panel switch is drawn as a 20 mm block standing on the deck edge; its depth and weight are not published, so it adds no weight. Fuse holder and wires are not drawn. Standoff weight is not counted.</li>
     <li>Control panel: an upright 3 mm plate on the back edge, in the deck material, with a handle across the top (10 mm wide bar). It holds the 20 mm power switch, the start toggle (6 or 12 mm hole; the switch is not chosen yet), a micro-USB panel port (12 mm hole, example size), the OLED, and optional test jacks (8 mm holes, 19 mm apart, example size). OLED: Pololu #3761, 128 × 64, 1.3″, 35.6 × 33.5 × 3.8 mm, 5.5 g, 3.3 V logic, four M3 holes. Fit panel grows the panel to hold its parts with 6 mm margins. Weights of the switches, port, and jacks are not counted.</li>
     <li>Step 5: Teensy 4.1 on the OONO D-1395P carrier is drawn at an example 85 × 55 × 20 mm, 30 g, because CZH-Labs does not publish the board size (Components reference open item); enter measured numbers. VNH5019 #1451: 38.1 × 27.9 × 7.6 mm, 6.5 g (Pololu). BNO085 #4754: 25.6 × 22.7 × 4.6 mm (Adafruit); weight drawn as 3 g, an estimate. I²C mux drawn as Adafruit #5626, 40.6 × 20.2 × 4.8 mm (Adafruit); weight 4 g, an estimate; the class has not chosen a mux board. AS7341 #4698: Adafruit does not list the board size; drawn at an example 25.4 × 17.8 × 4.6 mm and 2 g, facing down. "Next to each motor" puts each driver just ahead of a front motor or behind a rear one, so the motor leads stay short.</li>
+    <li>Step 6 (ramp and tip): a standing-still estimate using the center of balance above. On a 25° ramp (rule 3.7) gravity leans 25° from straight down in the robot's frame, so the balance point shifts by its height × tan 25° (0.47): rearward facing up the ramp, forward facing down it. If it lands behind the rearmost wheel or caster contact, or ahead of the frontmost, the robot tips. "Tips at" is the ramp angle where that happens: the arctangent of (distance from the balance point to that contact ÷ balance point height). For 2WD the page assumes the robot rests on the drive wheels and the caster on the side the weight shifts toward; the share of weight left on the drive wheels sets the grip needed: friction coefficient ≈ tan 25° ÷ that share. With every wheel driven (4WD) the grip needed is tan 25° ≈ 0.47. The page does not know the friction of a given tire on the ramp surface, so compare the number with a real ramp test (the Session 02 test slipped).</li>
     <li>Saving: work saves in this browser only. A downloaded file or a copied save code holds every setting and the robot name; open or paste it to pick up where you left off.</li>
     <li>Speed bumps are up to 1 cm high (rule 3.5.1). The 225 mm limit is the class size target (25 cm tunnel minus 10%). Length has no limit.</li>
   </ul>
@@ -345,7 +354,7 @@ document.getElementById('levelbtn').addEventListener('click',makeLevel);
 document.getElementById('g-wb').appendChild(document.getElementById('wb-hint'));
 function preset(p){Object.assign(st,p);rev.body=rev.drive=true;document.getElementById('wb').value=st.wb;draw()}
 let curStep=1,curView='top';
-function go(n,noScroll){curStep=n;[1,2,3,4,5].forEach(i=>{document.getElementById('step'+i).hidden=n!==i;document.getElementById('tab'+i).classList.toggle('on',n===i)});draw();if(!noScroll&&window.matchMedia('(max-width:900px)').matches)document.getElementById('tab'+n).scrollIntoView({block:'start'})}
+function go(n,noScroll){curStep=n;[1,2,3,4,5,6].forEach(i=>{document.getElementById('step'+i).hidden=n!==i;document.getElementById('tab'+i).classList.toggle('on',n===i)});draw();if(!noScroll&&window.matchMedia('(max-width:900px)').matches)document.getElementById('tab'+n).scrollIntoView({block:'start'})}
 function setView(v){curView=v;[['top3','top'],['side3','side'],['rear3','rear']].forEach(([id,k])=>document.getElementById(id).toggleAttribute('hidden',v!==k));
  [['vt','top'],['vs','side'],['vr','rear']].forEach(([id,k])=>document.getElementById(id).classList.toggle('on',v===k));
  document.getElementById('viewhint').textContent=v==='top'?'Front is up.':v==='side'?'Right side. Front is left. Wheel drawn see-through.':'Looking at the back. The robot\'s left is on your left.';persist()}
@@ -402,6 +411,7 @@ document.getElementById('g-spacer').classList.toggle('dim',st.caster!=='c34');
 document.getElementById('spacer-hint').textContent=st.caster==='c34'?'':'¾″ caster only';
 const cs=CASTERS[st.caster],Hc=cs.h+(st.caster==='c34'?SPACER[st.spacer]:0);
 document.getElementById('levelbtn').hidden=!hasCaster;
+G.wtypeNote=null;
 const lab=(k)=>opts[k].find(o=>String(o[0])===String(st[k]))[1];
 document.getElementById('summary').textContent='From step 1: '+[lab('drive'),lab('shape'),trk?'tracks':st.dia+' mm '+(wt==='mec'?'mecanum ':wt==='omni'?'omni ':'')+'wheels',lab('place').toLowerCase(),stag?'staggered motors':'back-to-back motors'].join(' · ');
 if(RB&&RD&&st.shape==='round'&&four){
@@ -574,7 +584,7 @@ G.levelHtml=RB&&RD&&hasCaster&&Math.abs(gap)>=0.5?sHtml:'';
 const okA=a=>a>=25?'var(--ok)':'var(--bad)';
 out2.innerHTML=!(RB&&RD)?'':tile('Lowest point ≈',r1(low)+' mm',low>10?'var(--ok)':'var(--bad)')+tile('Deck underside ≈',r1(dBot)+' mm')+tile('Height left ≈',Math.round(225-stackTop)+' mm')
  +tile('Approach ≈',appr>=89?'no overhang':Math.round(appr)+'°',okA(appr))+tile('Departure ≈',dep>=89?'no overhang':Math.round(dep)+'°',okA(dep))+tile('Break-over ≈',brk>=179?'n/a':Math.round(brk)+'°',okA(brk));
-Object.assign(G,{bad:null,rb:RB,rd:RD,w,mBot,mTop,bodySvg:body,leg1,nw,poly,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
+Object.assign(G,{bad:null,wtypeNote:wt==='mec'?'Mecanum rollers do not grip like a plain tire; the grip number assumes rubber tires, so test on a ramp.':wt==='omni'?'Omni rollers spin sideways freely; the grip number assumes rubber tires, so test on a ramp, including at an angle.':null,rb:RB,rd:RD,w,mBot,mTop,bodySvg:body,leg1,nw,poly,L,hw,wi,wo,wf,wheels,motors,casters,cs,dBot,dTop,hR,D,cy,SR,W,stackTop,hBase,gBase:g,shape:st.shape,nd});
 draw3();
 }
 /* ---------- step 3: front sensors ---------- */
@@ -622,7 +632,7 @@ $('g5-ds').classList.toggle('dim',st5.dl!=='group');$('ds-hint').textContent=st5
  [['g4-bwhere','bwhere'],['g4-r5w','r5w'],['g4-r3w','r3w']].forEach(([id,k])=>$(id+'-hint').textContent=st4[k]==='lv2'&&!st4.lv2?'Add the second level first; drawn on the base deck for now.':'')}
 $('summary3').textContent=$('summary').textContent;
 const top=$('top3'),side=$('side3'),out=$('out3'),stat=$('status3');
-if(!G||G.bad){const m=`<text x="340" y="100" text-anchor="middle">${G&&G.bad?G.bad:''}</text>`;top.innerHTML=G&&G.topOnly?G.topOnly:m;side.innerHTML=m;document.getElementById('cgline').textContent='Center of balance needs the side view, so it is not shown for this layout.';out.innerHTML='';stat.innerHTML=G&&G.bad?G.bad:'';$('status4').textContent=G&&G.bad?G.bad:'';$('out4').innerHTML='';persist();return}
+if(!G||G.bad){const m=`<text x="340" y="100" text-anchor="middle">${G&&G.bad?G.bad:''}</text>`;top.innerHTML=G&&G.topOnly?G.topOnly:m;side.innerHTML=m;document.getElementById('cgline').textContent='Center of balance needs the side view, so it is not shown for this layout.';out.innerHTML='';stat.innerHTML=G&&G.bad?G.bad:'';$('status4').textContent=G&&G.bad?G.bad:'';$('out4').innerHTML='';$('status6').textContent=G&&G.bad?G.bad:'';$('out6').innerHTML='';persist();return}
 const RQ=rev.qtr,RC=rev.cam,RT=rev.tof,f4=RT&&st3.l4f,l4=RT&&st3.l4l,r4=RT&&st3.l4r;
 const g=G,F=-g.L/2,Fc=F+(g.shape==='u'?g.nd:0),bad=[],watch=[];
 const X2=m=>340+m*2,Z2=z=>262-z*2;
@@ -785,6 +795,17 @@ const dAx=cg[1]-g.cy,axN=st.drive==='2wd'?'drive axle':'wheelbase center';
 const sym='<svg viewBox="-9 -9 18 18" aria-hidden="true">'+cgSym(0,0)+'</svg>';
 document.getElementById('cgline').innerHTML=Mt===0?'':`<span>${sym} Center of balance</span><span><b>${Math.round(Math.abs(dAx))} mm</b> ${dAx<=0?'ahead of':'behind'} the ${axN}</span><span><b>${Math.round(cg[2])} mm</b> above the floor</span><span><b>${Math.round(Math.abs(cg[0]))} mm</b> ${Math.abs(cg[0])<0.5?'off center':cg[0]>0?'right of center':'left of center'}</span><span><b>${Math.round(Mt)} g</b> of parts so far (${RB4&&R5.tee&&R5.drv?'wires, screws and standoffs not counted':RB4?'some electronics still to place; wires not counted':'no battery or electronics yet'})</span>`;
 G.cgSide=Mt>0?cgSym(X2(cg[1]),Z2(cg[2])):'';
+/* step 6: tip and grip on a 25 degree ramp (static) */
+const TH6=25,tT6=Math.tan(rad(TH6)),dg6=x=>x*180/Math.PI;let R6=null,ramp6='';
+if(Mt>0&&G.rd){const yG=cg[1],hG=cg[2],cyC=g.casters.map(c=>c[1]),yAll=g.wheels.map(q=>q.yc).concat(cyC),yF=Math.min(...yAll),yB=Math.max(...yAll);
+ const frac=d=>{if(st.drive!=='2wd')return 1;const ye=yG+d*hG*tT6,ya=g.cy;
+  if(Math.abs(ye-ya)<0.01)return 1;
+  if(ye>ya){const yc=Math.max(...cyC);return yc>ya?Math.max(0,Math.min(1,(yc-ye)/(yc-ya))):0}
+  const yc=Math.min(...cyC);return yc<ya?Math.max(0,Math.min(1,(ye-yc)/(ya-yc))):0};
+ R6={yG,hG,yF,yB,back:dg6(Math.atan2(yB-yG,hG)),fwd:dg6(Math.atan2(yG-yF,hG)),up:frac(1),dn:frac(-1)};
+ if(curStep===6){ramp6+=`<line x1="${X2(yF)}" y1="${Z2(0)}" x2="${X2(yB)}" y2="${Z2(0)}" stroke="var(--fg)" stroke-width="5" opacity="0.3"/>`;
+  [[1,'Up 25°'],[-1,'Down 25°']].forEach(([d,t])=>{const ye=yG+d*hG*tT6,c=ye>=yF-0.01&&ye<=yB+0.01?'var(--ok)':'var(--bad)';
+   ramp6+=`<line x1="${X2(yG)}" y1="${Z2(hG)}" x2="${X2(ye)}" y2="${Z2(0)}" stroke="${c}" stroke-width="1.5" stroke-dasharray="5 3"/><circle cx="${X2(ye)}" cy="${Z2(0)}" r="4" fill="${c}"/><text x="${X2(ye)}" y="${Z2(0)+16}" text-anchor="middle" style="fill:${c}">${t}</text>`})}}
 h+=g.leg1;
 if(!(G.rb||G.rd||RQ||RC||RT))h+=`<text x="340" y="200" text-anchor="middle" style="font-size:15px;fill:var(--fg)">Start in step 1.</text><text x="340" y="224" text-anchor="middle">Pick a sample, or choose a shape and a drive.</text>`;
 top.innerHTML=h;
@@ -808,7 +829,7 @@ items.forEach(a=>{if(a.kind==='lv2')sv+=`<g fill="var(--body)" stroke="var(--acc
  else if(a.kind==='sw')sv+=`<g fill="var(--reg)" stroke="var(--reg-line)" stroke-width="1">${RR(a.y0+5,a.z0,a.y1-5,a.z1,'rx="2"')}</g>`;
  else sv+=`<g fill="var(--${a.kind})" stroke="var(--${a.kind}-line)" stroke-width="1">${RR(a.y0,a.z0,a.y1,a.z1,'rx="2"')}</g>`});
 if(PN){const zt=g.dTop+s4.ph,yb=g.L/2-1.5;sv+=`<path d="M${X2(yb)} ${Z2(zt)} V${Z2(zt+s4.hh)}" stroke="var(--pnl-line)" stroke-width="4" stroke-linecap="round" fill="none"/>`}
-sv+=G.cgSide;
+sv+=ramp6+G.cgSide;
 side.innerHTML=sv;
 /* status + readouts */
 let sh=bad.map(b=>`<strong class="bad">${b}</strong>`).join('<br>');
@@ -852,13 +873,30 @@ out.innerHTML=!(RQ||RC||RT)?'':(RQ?tile('QTR height ≈',r1(qz0)+' mm',ok(qz0<=4
   if(!t)t='<strong class="ok">No conflicts found.</strong> The control parts fit.';el.innerHTML=t;
   const im=items.find(a=>a.name==='IMU'),te=items.find(a=>a.name==='Teensy carrier'),cl=items.find(a=>a.kind==='col');
   o5.innerHTML=(im?tile('IMU from turn center ≈',Math.round(Math.hypot((im.x0+im.x1)/2,(im.y0+im.y1)/2-g.cy))+' mm'):'')+(te?tile('Teensy carrier top ≈',r1(te.z1)+' mm',ok(te.z1<=225)):'')+(cl?tile('Color sensors off floor ≈',r1(cl.z0)+' mm'):'')+tile('Height ≈',Math.round(Ht)+' mm',ok(Ht<=225))}}
+{const el=$('status6'),o6=$('out6');
+ if(!R6){el.innerHTML='<span class="summary">Choose a drive in step 1 so the page has a center of balance to check.</span>';o6.innerHTML=''}
+ else{const b6=[],w6=[],two=st.drive==='2wd',mu=f=>f>0.005?(tT6/f).toFixed(2):'—';
+  if(R6.back<TH6)b6.push(R6.back<=0?'Tips backward even on a flat floor: the center of balance is behind the rearmost wheel or caster.':`Tips backward climbing a 25° ramp (tips at about ${Math.round(R6.back)}°). Move weight forward or lower it, or add support farther back.`);
+  if(R6.fwd<TH6)b6.push(R6.fwd<=0?'Tips forward even on a flat floor: the center of balance is ahead of the front wheel or caster.':`Tips forward going down a 25° ramp (tips at about ${Math.round(R6.fwd)}°). Move weight back or lower it, or add support farther forward.`);
+  if(two&&R6.back>=TH6&&R6.up<0.005)b6.push('Climbing, the weight sits on the casters and the drive wheels carry none, so the robot cannot drive up.');
+  if(two&&R6.fwd>=TH6&&R6.dn<0.005)b6.push('Going down, the weight sits on the casters and the drive wheels carry none, so the robot cannot brake.');
+  if(!rev.batt)w6.push('The battery is not placed yet (step 4). It is the heaviest part, so these numbers will move.');
+  else if(!(R5.tee&&R5.drv))w6.push('Some control boards are not placed yet (step 5), so these numbers will move a little.');
+  if(two&&st.arr==='stag')w6.push('Staggered motors: the drive axle is taken as halfway between the two wheels.');
+  if(G.wtypeNote)w6.push(G.wtypeNote);
+  w6.push('These are standing-still estimates. Starting, stopping, and the bump at each end of the ramp shift weight further, so leave a margin and test on a real ramp.');
+  el.innerHTML=(b6.length?b6.map(t=>`<strong class="bad">${t}</strong>`).join('<br>'):'<strong class="ok">Does not tip on a 25° ramp</strong> either way, standing still.')+'<br>'+w6.map(t=>'<strong>Check:</strong> '+t).join('<br>');
+  const ang=a=>a<=0?'tips on flat':a>=89.5?'90°':Math.round(a)+'°',pc=f=>Math.round(f*100)+'%';
+  o6.innerHTML=tile('Tips backward at ≈',ang(R6.back),ok(R6.back>=TH6))+tile('Tips forward at ≈',ang(R6.fwd),ok(R6.fwd>=TH6))
+   +tile('Weight on drive wheels, up ≈',pc(R6.up),ok(R6.up>0.005))+tile('Grip needed, up ≈',mu(R6.up))
+   +tile('Weight on drive wheels, down ≈',pc(R6.dn),ok(R6.dn>0.005))+tile('Grip needed, down ≈',mu(R6.dn))}}
 persist();
 }
 /* ---------- save, export, import ---------- */
 const SAVE_KEY='lrq-sample-drive-bases-v2',DEF=JSON.parse(JSON.stringify(st)),DEF3=JSON.parse(JSON.stringify(st3)),DEF4=JSON.parse(JSON.stringify(st4)),DEF5=JSON.parse(JSON.stringify(st5));
 const RANGE={wb:[80,160],adj:[-9,20],deck:[1,12],cut:[0,30]};
 let ready=false;
-function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.11',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3},st4:{...st4},st5:{...st5}}}
+function snapshot(){return{page:'LRQ Sample Drive Bases',pageVersion:'1.12',saved:new Date().toISOString(),name:document.getElementById('rname').value.trim(),step:curStep,view:curView,rev:{...rev},st:{...st},st3:{...st3},st4:{...st4},st5:{...st5}}}
 function persist(){if(!ready)return;try{localStorage.setItem(SAVE_KEY,JSON.stringify(snapshot()))}catch(e){}}
 function applySave(o){
  if(!o||typeof o!=='object'||!o.st||!o.st3)throw new Error('not a save');
@@ -878,7 +916,7 @@ function applySave(o){
   if(typeof v==='number'&&el&&el.type==='range'&&!(v>=+el.min&&v<=+el.max))continue;st3[k]=v}
  document.getElementById('rname').value=typeof o.name==='string'?o.name.slice(0,40):'';
  document.getElementById('wb').value=st.wb;document.getElementById('deckc').value=st.deck;
- setView(['side','rear'].includes(o.view)?o.view:'top');go([1,2,3,4,5].includes(o.step)?o.step:1,true)}
+ setView(['side','rear'].includes(o.view)?o.view:'top');go([1,2,3,4,5,6].includes(o.step)?o.step:1,true)}
 const say=t=>{document.getElementById('smsg').textContent=t};
 const fname=()=>{const n=document.getElementById('rname').value.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');return `drive-base-${n||'robot'}-${new Date().toISOString().slice(0,10)}.json`};
 const encode=o=>'LRQDB1:'+btoa(unescape(encodeURIComponent(JSON.stringify(o))));
